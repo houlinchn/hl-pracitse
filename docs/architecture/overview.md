@@ -80,3 +80,16 @@ Redis 和 Celery 仍然不是 MVP 的默认依赖。只有出现以下明确需�
 - 邮件、视频或文件扫描任务量影响接口响应
 - 需要分布式锁或跨实例共享的高频缓存
 - 需要大量定时任务及集中任务状态管理
+
+## 核心招聘 POC 当前实现
+
+- `frontend/`：Nuxt 3 + Vue 3 + TypeScript，同一个站点提供演示职位、申请人门户和员工工作台；Nitro 仅代理固定的 FastAPI upstream，不持有或伪造业务身份。
+- `backend/poc/accounts.py`：scrypt 密码摘要、不透明会话和短期委托、当前权限与对象范围的交集。公开注册只创建申请人；员工通过 `poc.cli create-staff` 显式初始化。
+- `backend/poc/applications.py`：申请查询、草稿编辑和三状态流转的唯一业务实现；网页与 AI HTTP 适配器共用服务、输入输出、权限和事务。
+- `backend/poc/db.py`：SQLAlchemy 2 模型与请求事务；PostgreSQL 行锁 + 版本核对保证并发更新一致。业务变更、状态事件、成功审计原子提交；事件与审计分表并设 UPDATE / DELETE 保护触发器。
+- AI 业务能力由 OpenAPI 描述的 `/api/ai` 提供，认证为后端签发、受限、可过期、可撤销的委托 Bearer；不会使用客户端 actor 字段。委托管理属于网页安全控制面，AI 不可再委托。
+- 只实现草稿 → 已提交 → 初筛，草稿仅本人可见，每个申请人仅支持一份演示申请。未引入后续招聘和运营模块、文件存储或第三方集成。
+- `compose.yaml`：独立 `hl-pracitse-poc` 项目、专用 PostgreSQL 卷与默认网络，三个服务只绑定 loopback。没有加入 Caddy 或现有反代。schema 显式初始化，暂缓 Alembic；只适用于新的隔离 POC，不能自动升级既有表结构。
+- `backend/tests/` 使用真正 PostgreSQL 的独立测试库；`frontend/tests/` 用桌面 / 移动视口验证真实页面与 AI HTTP；`scripts/smoke.py` 验证完整容器网络链路。
+
+当前接口、权限矩阵、操作边界与可执行复核步骤以 [POC runbook](../runbooks/recruitment-poc.md) 为运行入口。产品目标、领域术语、ADR 和开发治理未改变。

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Development workflow
+    url: https://github.com/houlinchn/hl-pracitse/blob/main/docs/development/vibe-coding.md
+    about: Read docs/development/vibe-coding.md before creating work.

@@ -1,0 +1,120 @@
+name: Bug
+description: 报告实际行为与已确认预期不一致的问题
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bug 必须描述可复现的实际行为和有依据的预期行为。安全漏洞不要公开提交敏感利用细节。
+  - type: textarea
+    id: observed
+    attributes:
+      label: 实际行为
+      description: 当前发生了什么？包含错误信息和影响。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+      description: 正确行为是什么？链接支持这一预期的文档或已确认决定。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 使用角色 ...
+        2. 打开 ...
+        3. 执行 ...
+        4. 观察到 ...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据和环境
+      description: 日志、截图、版本、数据条件和发生频率。提交前移除凭据和个人敏感信息。
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 用户和业务影响
+      description: 影响哪些用户、数据和流程？是否有临时解决办法？
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 修复范围
+      description: 写明 In Scope 和 Out of Scope。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 包括回归测试和错误路径。
+      placeholder: |
+        - [ ] 问题不再复现
+        - [ ] 相关正常流程保持有效
+    validations:
+      required: true
+  - type: input
+    id: parent
+    attributes:
+      label: Epic / Milestone
+      description: 关联父 Epic 或写明所属 Milestone；没有则写 none。
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依赖关系
+      description: 列出阻塞和被阻塞的 Issue；没有则写 none。
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - P0 - 紧急
+        - P1 - 高
+        - P2 - 普通
+        - P3 - 低
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: 风险等级
+      options:
+        - L0 - 快速改动
+        - L1 - 标准改动
+        - L2 - 关键改动
+    validations:
+      required: true
+  - type: textarea
+    id: data_security
+    attributes:
+      label: 数据、权限和安全影响
+      description: 包括迁移、隐私、审计和回退影响；没有则写 none。
+    validations:
+      required: true
+  - type: textarea
+    id: ai_parity
+    attributes:
+      label: 管理员与 AI 影响
+      description: 问题是否同时影响管理员界面和 AI 工具？修复后如何验证两种入口一致？
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: 长期文档影响
+      description: 列出需要更新的文档；没有则写 none。
+    validations:
+      required: true

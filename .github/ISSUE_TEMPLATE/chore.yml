@@ -1,0 +1,83 @@
+name: Chore
+description: 基础设施、依赖和工程维护工作
+title: "[Chore]: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: 预期结果
+      description: 完成后工程状态发生什么可验证变化？
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: 背景和必要性
+      description: 为什么现在需要做？链接相关 Issue 或文档。
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: 范围
+      description: 分别写明 In Scope 和 Out of Scope。
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: input
+    id: parent
+    attributes:
+      label: Epic / Milestone
+      description: 关联父 Epic 或所属 Milestone；没有则写 none。
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依赖关系
+      description: 没有则写 none。
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - P0 - 紧急
+        - P1 - 高
+        - P2 - 普通
+        - P3 - 低
+    validations:
+      required: true
+  - type: dropdown
+    id: risk
+    attributes:
+      label: 风险等级
+      options:
+        - L0 - 快速改动
+        - L1 - 标准改动
+        - L2 - 关键改动
+    validations:
+      required: true
+  - type: textarea
+    id: operational_risk
+    attributes:
+      label: 数据、安全和运行风险
+      description: 包括迁移、回退、依赖兼容和生产影响；没有则写 none。
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: 长期文档影响
+      description: 列出需要更新的文档；没有则写 none。
+    validations:
+      required: true

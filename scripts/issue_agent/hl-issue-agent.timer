@@ -1,0 +1,11 @@
+[Unit]
+Description=Check hl-pracitse GitHub issues every five minutes
+
+[Timer]
+OnStartupSec=30s
+OnUnitActiveSec=300s
+AccuracySec=1s
+Unit=hl-issue-agent.service
+
+[Install]
+WantedBy=timers.target

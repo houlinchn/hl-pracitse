@@ -1,0 +1,25 @@
+name: Issue agent verification
+on:
+  pull_request:
+    paths:
+      - scripts/issue_agent/**
+      - tests/test_issue_agent.py
+      - .github/workflows/issue-agent.yml
+  push:
+    paths:
+      - scripts/issue_agent/**
+      - tests/test_issue_agent.py
+      - .github/workflows/issue-agent.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify authorization and job lifecycle
+        run: python3 -m unittest discover -s tests -p 'test_issue_agent.py' -v
+      - name: Compile and check systemd units
+        run: |
+          python3 -m py_compile scripts/issue_agent/agent.py
+          systemd-analyze verify scripts/issue_agent/hl-issue-agent.service scripts/issue_agent/hl-issue-agent.timer

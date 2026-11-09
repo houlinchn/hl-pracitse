@@ -264,6 +264,22 @@ class EngineTests(unittest.TestCase):
                 self.e.start(issue(), reviewed(), "develop")
         run.assert_not_called()
 
+    def test_state_is_reloaded_after_acquiring_poll_lock(self):
+        config = Path(self.temp.name) / "config.json"
+        agent.atomic(config, self.cfg)
+        self.e.save()
+        def acquire(*args):
+            changed = copy.deepcopy(self.e.state)
+            changed["committed_by_previous_poll"] = True
+            agent.atomic(self.e.file, changed)
+        observed = []
+        def poll(engine):
+            observed.append(engine.state.get("committed_by_previous_poll"))
+            engine.state["last_poll"] = agent.now()
+        with patch.object(agent.sys, "argv", ["agent.py", "poll", str(config)]), patch.object(agent.fcntl, "flock", side_effect=acquire), patch.object(agent.Engine, "poll", new=poll), patch("builtins.print"):
+            agent.main()
+        self.assertEqual(observed, [True])
+
 
 class LocalGitDeliveryTests(unittest.TestCase):
     def test_real_commit_push_and_pr_reuse(self):

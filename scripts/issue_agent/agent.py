@@ -430,6 +430,8 @@ def main():
         except BlockingIOError:
             print("Another poll is active; skip.")
             return
+        # The first read may predate another poll that has just released its lock.
+        engine = Engine(cfg)
         try:
             engine.poll()
             print(json.dumps({"last_poll": engine.state["last_poll"], "active": engine.state["active"]}, ensure_ascii=False))

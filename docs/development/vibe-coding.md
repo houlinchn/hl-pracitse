@@ -108,6 +108,10 @@ Milestone
 
 ## 6. Definition of Ready
 
+创建 Issue 草稿时只需描述问题或需求；标题已预填，期望结果、截图、复现步骤和其他补充信息均选填。AI 随后查阅代码和文档，在 Issue 正文或方案评论中补齐工作类型、范围、验收标准、风险、优先级建议、依赖和文档影响；需要业务决定的内容交给人确认。
+
+创建草稿与批准开发分属两个阶段。简化创建表单不代表 Issue 自动 Ready，也不要求用户在提交时准备好以下全部工程信息。
+
 Issue 进入 `Ready` 前必须包含：
 
 - 明确的问题或预期业务结果
@@ -250,7 +254,7 @@ AI 在 Issue 和 PR 中提供：
 - 创建 GitHub Project，并将 `Status` 配置为 `Draft`、`Human Review`、`Ready`、`In Progress`、`In Review`、`Blocked`、`Done` 和 `Cancelled`。
 - 创建 `Priority` 字段，取值为 `P0`、`P1`、`P2`、`P3`。
 - 创建 `Risk` 字段，取值为 `L0`、`L1`、`L2`。
-- Feature、Bug、Chore、Research、Epic 和 Loop Mandate 使用仓库提供的 Issue Forms。
+- Feature、Bug、Chore、Research、Epic 和 Loop Mandate 草稿统一使用仓库的简洁 Issue Form；创建时仅问题或需求描述必填，类型和开发契约在后续讨论中补齐。Loop Mandate 草稿不代表授权，仍须满足第 14 节的全部条件并经人明确批准。
 - 保护主分支，禁止强推和删除。
 - L1、L2 必须通过 Pull Request，并由人完成最终审核。
 - 在测试工具建立后，将相应测试、格式、类型和构建检查设为必需检查。

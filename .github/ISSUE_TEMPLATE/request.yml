@@ -1,0 +1,31 @@
+name: 描述问题或需求
+description: 写下遇到的问题或想做的事，其他信息可以稍后补充。
+title: 问题或需求
+body:
+  - type: markdown
+    attributes:
+      value: |
+        只需填写下面的问题描述。标题已预填，可以按需修改。
+        提交后会在评论中讨论方案，等你确认后再开始开发。
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题或需求描述
+      description: 用自己的话说明遇到了什么问题，或者希望增加什么功能。
+      placeholder: 例如：后台申请列表内容太多，希望能按邮箱搜索。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果（选填）
+      description: 如果已经有想法，可以描述希望看到的效果。
+    validations:
+      required: false
+  - type: textarea
+    id: details
+    attributes:
+      label: 补充信息（选填）
+      description: 可以补充页面位置、复现步骤、截图或相关链接。
+    validations:
+      required: false

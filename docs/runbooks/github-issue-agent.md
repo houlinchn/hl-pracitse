@@ -6,7 +6,7 @@
 
 监听仓库 `houlinchn/hl-pracitse`，每 300 秒检查一次，只接受 `houlinchn` 创建的 Issue 和该账号的新评论。
 
-1. 在 GitHub 创建 Issue，说明问题与预期效果。启用后的新 Issue 自动进入只读方案讨论；旧 Issue 需要另发 `/codex plan` 才会接入。既有 POC #2 不自动重启开发。
+1. 在 GitHub 选择“描述问题或需求”，只填写问题描述即可提交；标题已预填，期望结果和补充信息选填。工程信息由 Codex 在方案阶段补齐。启用后的新 Issue 自动进入只读方案讨论；旧 Issue 需要另发 `/codex plan` 才会接入。既有 POC #2 不自动重启开发。
 2. 监听器回复方案，包含范围、验收、风险、依赖和文档影响。缺少业务决定时在同一 Issue 回复；它会重新调查并生成方案。
 3. 完整方案末尾有类似 `/codex ready a12345678901` 的指令。复制该方案给出的完整指令，另发一条评论，即代表你授权这一版方案成为 Ready。单独说“ready”、修改看板或批准旧版本均不会启动开发。
 4. 调度器记录授权评论链接，并将看板依次更新为 Ready / In Progress。在独立 worktree 单任务开发，不修改正在运行的 POC。
@@ -45,7 +45,7 @@
 
 本机运行目录 `/home/muise/.local/share/hl-pracitse-issue-agent/`，私密配置 `config.json`；状态及任务日志 `/home/muise/.local/state/hl-pracitse-issue-agent/`。目录 700、文件 600；配置不保存凭据。新任务工作树为 `/home/muise/wokrspace/hl-pracitse-issue-N`，分支 `codex/N-issue-agent`。
 
-配置字段：`repo`、`owner`、`project`、`base`、`repo_dir`、`worktree_root`、`state_dir`、`gh`、`codex`、`git_email`、`path`、`since`、`excluded_issues`、`job_timeout`。`since` 是首次启用的 UTC 时间下界，不能在重启时重置；`excluded_issues` 包含本监听器交付 Issue #4。不要删除状态文件来“重试”，否则会失去去重和审批上下文。
+配置字段：`repo`、`owner`、`project`、`base`、`repo_dir`、`worktree_root`、`state_dir`、`gh`、`codex`、`git_email`、`path`、`since`、`excluded_issues`、`job_timeout`。`since` 是首次启用的 UTC 时间下界，不能在重启时重置；`excluded_issues` 包含本监听器交付 Issue #4 和已由人工会话领取的任务，避免重复处理。不要删除状态文件来“重试”，否则会失去去重和审批上下文。
 
 部署前先确认 GitHub 身份、Codex 登录、用户级 systemd 和 `Linger=yes`。在批准的源码工作树执行：
 

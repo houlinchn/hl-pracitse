@@ -1,0 +1,46 @@
+name: hl-pracitse-poc
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: poc
+      POSTGRES_DB: recruitment_poc
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/configure.py first}
+    ports: ["127.0.0.1:13082:5432"]
+    volumes: ["poc-postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poc -d recruitment_poc"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://poc:${POSTGRES_PASSWORD}@db:5432/recruitment_poc
+      APP_ORIGIN: http://127.0.0.1:13080
+      COOKIE_SECURE: "false"
+    ports: ["127.0.0.1:13081:8000"]
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      db: { condition: service_healthy }
+    command: ["uv", "run", "--frozen", "--no-dev", "uvicorn", "poc.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+  web:
+    build: ./frontend
+    environment:
+      NUXT_API_BASE: http://api:8000
+      HOST: 0.0.0.0
+      PORT: "3000"
+    ports: ["127.0.0.1:13080:3000"]
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  poc-postgres:

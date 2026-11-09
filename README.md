@@ -11,3 +11,4 @@
 - [Vibe Coding 开发规范](./docs/development/vibe-coding.md)
 - [文档管理规范](./docs/development/documentation.md)
 - [架构决策](./docs/adr/)
+- [GitHub Issue 开发监听器](./docs/runbooks/github-issue-agent.md)

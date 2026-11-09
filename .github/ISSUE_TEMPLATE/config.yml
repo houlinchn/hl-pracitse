@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Development workflow
+  - name: 了解开发流程（可选）
     url: https://github.com/houlinchn/hl-pracitse/blob/main/docs/development/vibe-coding.md
-    about: Read docs/development/vibe-coding.md before creating work.
+    about: 创建时只需描述问题，方案和验收标准会在后续讨论中补齐。

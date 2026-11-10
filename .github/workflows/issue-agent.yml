@@ -21,5 +21,5 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_issue_agent.py' -v
       - name: Compile and check systemd units
         run: |
-          python3 -m py_compile scripts/issue_agent/agent.py
+          python3 -m py_compile scripts/issue_agent/agent.py scripts/issue_agent/install.py
           systemd-analyze verify scripts/issue_agent/hl-issue-agent.service scripts/issue_agent/hl-issue-agent.timer

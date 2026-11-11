@@ -38,10 +38,6 @@ jobs:
         run: |
           uv run --project backend --env-file .env python scripts/test_backend.py
           uv run --project backend python scripts/smoke.py
-      - name: Browser QA (desktop and mobile)
-        run: |
-          pnpm --dir frontend exec playwright install --with-deps chromium
-          pnpm --dir frontend test:e2e
       - name: Stop only the POC environment
         if: always()
         run: docker compose -p hl-pracitse-poc down --volumes

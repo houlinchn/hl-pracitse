@@ -133,9 +133,9 @@ pnpm --dir frontend build
 uv run --project backend python scripts/smoke.py
 # 可选：停止并重新启动仅本 POC 全栈，验证卷和会话持久化
 uv run --project backend python scripts/smoke.py --restart
-pnpm --dir frontend exec playwright install chromium
-pnpm --dir frontend test:e2e
 ```
+
+页面、视觉及交互由用户在部署后验收。默认 CI 不安装浏览器、不执行浏览器页面验收。仓库保留 Playwright 用例作为可选工具，仅在用户明确要求自动化浏览器测试时使用；下述浏览器说明不代表默认执行要求。
 
 测试入口和 fixture 均校验固定的 loopback 13082、poc 账号与专用测试库名；不接受任意 DATABASE_URL 作为清库目标。测试包括正常、非法输入、权限与对象越权、身份伪造、委托权限收窄 / 过期 / 撤销、状态冲突、重复和四并发写入、人机混合并发、真实数据库故障回滚、历史防篡改与 CLI 创建员工。
 

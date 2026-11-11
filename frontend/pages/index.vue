@@ -49,12 +49,18 @@ watch(authOpen, async (opened) => {
     authDialog.value?.querySelector<HTMLInputElement>("#auth-email")?.focus();
   } else {
     password.value = "";
+    await nextTick();
     previousFocus?.focus();
   }
 });
+function openAuth(mode: "login" | "register") {
+  authMode.value = mode;
+  error.value = "";
+  authOpen.value = true;
+}
 function trapAuthFocus(event: KeyboardEvent) {
   const nodes = authDialog.value?.querySelectorAll<HTMLElement>(
-    "button:not(:disabled), input, select, textarea",
+    "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)",
   );
   if (!nodes?.length) return;
   const first = nodes[0]!;
@@ -301,15 +307,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="Teacher Operations 首页"
-        ><span class="brand-symbol">t<span>o</span></span
-        ><span>Teacher<span class="brand-secondary">Operations</span></span></a
-      >
+  <div :class="{ 'public-site': !account }">
+    <header class="topbar" :inert="authOpen">
+      <a class="brand voxnova-brand" href="/" aria-label="Voxnova 首页">
+        <span class="voxnova-mark" aria-hidden="true">v<span>✳</span></span>
+        <span>Voxnova<span class="brand-secondary">让热爱，有回响</span></span>
+      </a>
+      <nav v-if="!account && !loading" class="public-nav" aria-label="首页导航">
+        <a href="#position">教师岗位</a><a href="#process">申请流程</a
+        ><a href="#faq">常见问题</a>
+      </nav>
       <div class="topbar-right">
-        <span class="demo-tag"><span class="status-dot" />演示环境 · POC</span
-        ><template v-if="account"
+        <template v-if="account"
           ><span class="account-email">{{ account.email }}</span
           ><button class="text-button" :disabled="busy" @click="logout">
             退出登录
@@ -328,7 +337,7 @@ onMounted(async () => {
       </div>
     </header>
     <div v-if="loading" class="loading" role="status">正在连接工作台…</div>
-    <template v-else>
+    <div v-else :inert="authOpen">
       <div v-if="error" class="message error" role="alert">
         {{ error
         }}<button class="text-button" @click="error = ''" aria-label="关闭错误">
@@ -338,82 +347,11 @@ onMounted(async () => {
       <div v-if="notice" class="message success" role="status">
         {{ notice }}
       </div>
-      <main v-if="!account" class="landing">
-        <div class="landing-copy">
-          <span class="eyebrow">TEACHER RECRUITMENT / 教师招聘</span>
-          <h1>
-            从一次申请，<br />开启新的<span class="serif-accent">可能。</span>
-          </h1>
-          <p class="landing-intro">
-            一份申请，一条清晰的路径。<br />在这里填写资料，提交申请，并随时查看最新状态。
-          </p>
-          <div class="landing-actions">
-            <button
-              class="button"
-              @click="
-                authOpen = true;
-                authMode = 'register';
-                error = '';
-              "
-            >
-              创建申请人账号 <span aria-hidden="true">↗</span></button
-            ><button
-              class="text-button"
-              @click="
-                authOpen = true;
-                authMode = 'login';
-                error = '';
-              "
-            >
-              已有账号？登录 →
-            </button>
-          </div>
-          <div class="demo-note">
-            <span aria-hidden="true">ⓘ</span
-            ><span
-              >这是核心招聘流程 POC。请只使用演示资料，<br />不填写真实个人信息。</span
-            >
-          </div>
-        </div>
-        <div class="position-card">
-          <div class="card-top">
-            <span class="eyebrow">EXAMPLE POSITION</span
-            ><span class="pill neutral">演示职位</span>
-          </div>
-          <div class="position-icon" aria-hidden="true">Aa<span>↗</span></div>
-          <h2>在线英语教师</h2>
-          <p>Online English Teacher</p>
-          <div class="position-rule" />
-          <h3>一条清晰的申请路径</h3>
-          <ol class="position-steps">
-            <li>
-              <span>01</span>
-              <div>
-                <strong>填写申请</strong><small>介绍自己，保存草稿</small>
-              </div>
-            </li>
-            <li>
-              <span>02</span>
-              <div>
-                <strong>提交资料</strong><small>确认后提交，保留完整记录</small>
-              </div>
-            </li>
-            <li>
-              <span>03</span>
-              <div>
-                <strong>进入初筛</strong><small>内部员工审核并记录原因</small>
-              </div>
-            </li>
-          </ol>
-          <div class="position-footer">
-            仅用于流程演示，不构成真实招聘邀约。
-          </div>
-        </div>
-        <footer class="landing-footer">
-          <span>TEACHER OPERATIONS</span><span>让每一步都有记录。</span
-          ><span>核心招聘闭环 / 01</span>
-        </footer>
-      </main>
+      <RecruitmentHome
+        v-if="!account"
+        @apply="openAuth('register')"
+        @login="openAuth('login')"
+      />
       <div v-else class="workspace">
         <aside class="sidebar">
           <div class="workspace-label">
@@ -965,12 +903,12 @@ onMounted(async () => {
             </div>
           </template>
           <footer class="workspace-footer">
-            <span>Teacher Operations · 核心招聘 POC</span
+            <span>Voxnova · 招聘工作台</span
             ><span>演示资料 / 三状态流程 / 可追溯操作</span>
           </footer>
         </main>
       </div>
-    </template>
+    </div>
     <div
       v-if="authOpen && !account"
       class="modal-backdrop"
@@ -991,7 +929,7 @@ onMounted(async () => {
           @click="authOpen = false"
         >
           ×</button
-        ><span class="eyebrow">WELCOME TO TEACHER OPERATIONS</span>
+        ><span class="eyebrow">WELCOME TO VOXNOVA</span>
         <h2 id="auth-heading">
           {{ authMode === "register" ? "开始你的申请" : "欢迎回来"
           }}<span class="title-dot">.</span>
@@ -999,7 +937,7 @@ onMounted(async () => {
         <p class="muted">
           {{
             authMode === "register"
-              ? "注册仅创建申请人账号，请使用演示资料。"
+              ? "创建申请人账号，开始填写申请资料。"
               : "申请人和内部员工使用各自账号登录。"
           }}
         </p>
@@ -1048,7 +986,7 @@ onMounted(async () => {
           /><small class="muted">{{
             authMode === "register"
               ? "内部员工由专用初始化命令创建。"
-              : "演示账号请查阅本机交接说明。"
+              : "请使用你自己的账号登录。"
           }}</small
           ><button class="button full" :disabled="busy">
             {{

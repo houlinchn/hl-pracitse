@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 process.umask(0o077);
 export default defineConfig({
   testDir: "./tests",
+  testMatch: "recruitment.spec.ts",
   fullyParallel: false,
   workers: 1,
   timeout: 90_000,

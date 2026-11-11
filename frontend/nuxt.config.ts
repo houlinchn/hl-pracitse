@@ -6,12 +6,13 @@ export default defineNuxtConfig({
   typescript: { strict: true },
   app: {
     head: {
-      title: "Teacher Operations · 招聘工作台",
+      title: "Voxnova · 在线英语教师招聘",
       htmlAttrs: { lang: "zh-CN" },
       meta: [
         {
           name: "description",
-          content: "核心招聘流程演示：申请、提交与初筛。仅使用演示数据。",
+          content:
+            "加入 Voxnova，开启在线英语教学的新可能。在这里填写教师申请、保存草稿、提交资料并查看初筛状态。",
         },
       ],
     },

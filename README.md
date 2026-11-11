@@ -1,10 +1,12 @@
-# Teacher Operations Platform
+# Voxnova
 
-面向在线英语教师招聘和在职运营的一体化平台，供申请教师、内部员工和经授权的 AI 使用。
+Voxnova 面向在线英语教师招聘和在职运营，服务申请人、内部员工和经授权的 AI。对外官网提供品牌、教师岗位、申请流程和常见问题入口。
 
-## 运行核心招聘 POC
+## 运行与验收
 
-本地演示已实现申请人注册登录、草稿编辑和提交、员工初筛、结构化 AI 对等接口、权限和审计。仅使用演示资料，流程止于初筛，不具备完整 MVP 或生产发布条件。
+产品已进入 Voxnova 招聘官网建设阶段。当前技术基础已实现申请人注册登录、草稿编辑与提交、员工初筛、结构化 AI 对等接口、权限和审计。品牌阶段变化不代表已补齐完整 MVP 的技术保障。
+
+首页开发验收使用[专属隔离环境](./docs/runbooks/voxnova-home-validation.md)，与现有运行服务分开。以下原 POC 入口仅供新的隔离演示使用，不应用于已有业务服务：
 
 ```bash
 ./scripts/poc.sh up
@@ -19,7 +21,7 @@
 
 - [领域语言](./CONTEXT.md)
 - [产品愿景与范围](./docs/product/vision.md)
-- [POC 路线图](./docs/product/roadmap.md)
+- [产品路线图](./docs/product/roadmap.md)
 - [架构与技术选型](./docs/architecture/overview.md)
 - [Vibe Coding 开发规范](./docs/development/vibe-coding.md)
 - [文档管理规范](./docs/development/documentation.md)

@@ -1,0 +1,39 @@
+# Dedicated, disposable Issue #8 acceptance environment. Never use the POC env file.
+name: voxnova-home-${VOXNOVA_TEST_RUN_ID:?Unique test run ID required}
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: voxnova_test
+      POSTGRES_DB: voxnova_home_test
+      POSTGRES_PASSWORD: ${VOXNOVA_TEST_DB_PASSWORD:?Fresh test password required}
+    volumes: ["home-test-postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voxnova_test -d voxnova_home_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  api:
+    image: voxnova-home-${VOXNOVA_TEST_RUN_ID:?Unique test run ID required}-api
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://voxnova_test:${VOXNOVA_TEST_DB_PASSWORD:?Fresh test password required}@db:5432/voxnova_home_test
+      APP_ORIGIN: http://127.0.0.1:${VOXNOVA_TEST_WEB_PORT:?Dedicated web port required}
+      COOKIE_SECURE: "false"
+    ports:
+      ["127.0.0.1:${VOXNOVA_TEST_API_PORT:?Dedicated API port required}:8000"]
+    depends_on:
+      db: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/app/.venv/bin/python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=2)",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  home-test-postgres:

@@ -195,133 +195,6 @@ p {
   letter-spacing: 1.8px;
   color: #7d8e7e;
 }
-.landing {
-  max-width: 1280px;
-  padding: 85px 65px 0;
-  margin: auto;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 80px;
-}
-.landing-copy {
-  padding-top: 27px;
-}
-.landing h1 {
-  font-size: clamp(38px, 4vw, 62px);
-  line-height: 1.5;
-  margin: 24px 0;
-  letter-spacing: -2px;
-}
-.serif-accent {
-  color: #7e9463;
-}
-.landing-intro {
-  font-size: 15px;
-  line-height: 2.1;
-  color: var(--muted);
-}
-.landing-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 34px;
-}
-.demo-note {
-  display: flex;
-  gap: 10px;
-  color: #929b90;
-  font-size: 11px;
-  line-height: 1.8;
-  margin-top: 44px;
-}
-.position-card {
-  background: #eaf0e1;
-  border: 1px solid #dce5d4;
-  border-radius: 14px;
-  padding: 30px 34px;
-  position: relative;
-}
-.card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.position-icon {
-  font-family: Georgia, serif;
-  font-size: 58px;
-  margin: 26px 0 16px;
-  letter-spacing: -5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.position-icon > span {
-  font-family: system-ui;
-  font-size: 33px;
-  font-weight: 200;
-  letter-spacing: 0;
-  color: #829b72;
-}
-.position-card h2 {
-  font-size: 26px;
-  letter-spacing: -0.5px;
-}
-.position-card > p {
-  color: #7a8d75;
-  font-size: 12px;
-  letter-spacing: 1px;
-  margin-top: 5px;
-}
-.position-rule {
-  height: 1px;
-  background: #d2ddc8;
-  margin: 26px 0;
-}
-.position-steps {
-  list-style: none;
-  padding: 18px 0 5px;
-  margin: 0;
-  display: grid;
-  gap: 20px;
-}
-.position-steps li {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.position-steps li > span {
-  color: #859875;
-  font-size: 11px;
-  font-family: monospace;
-}
-.position-steps strong {
-  font-size: 13px;
-  font-weight: 500;
-}
-.position-steps small {
-  display: block;
-  color: #82907c;
-  margin-top: 5px;
-}
-.position-footer {
-  font-size: 10px;
-  color: #8a987f;
-  border-top: 1px solid #d2ddc8;
-  padding-top: 18px;
-  margin-top: 22px;
-}
-.landing-footer {
-  grid-column: 1/-1;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  border-top: 1px solid var(--border);
-  padding: 22px 0;
-  color: #8c978b;
-  font-size: 10px;
-  letter-spacing: 1px;
-  margin-top: 8px;
-}
 .workspace {
   display: flex;
   min-height: calc(100vh - 88px);
@@ -1101,13 +974,6 @@ input[type="checkbox"] {
   .stat-row .stat-note {
     display: none;
   }
-  .landing {
-    gap: 40px;
-    padding: 65px 40px 0;
-  }
-  .landing-actions {
-    flex-wrap: wrap;
-  }
   .applicant-grid {
     gap: 24px;
   }
@@ -1280,41 +1146,6 @@ input[type="checkbox"] {
     padding: 10px 15px;
     font-size: 12px;
   }
-  .landing {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 45px 24px 0;
-  }
-  .landing-copy {
-    padding: 0;
-  }
-  .landing h1 {
-    font-size: 43px;
-    margin: 24px 0 20px;
-    line-height: 1.5;
-  }
-  .landing-intro {
-    font-size: 14px;
-  }
-  .landing-actions {
-    margin-top: 26px;
-    gap: 12px;
-  }
-  .landing-actions .button {
-    font-size: 12px;
-  }
-  .demo-note {
-    margin-top: 25px;
-  }
-  .position-card {
-    padding: 25px 28px;
-  }
-  .landing-footer {
-    flex-wrap: wrap;
-    font-size: 8px;
-    gap: 16px;
-    margin-top: 0;
-  }
   .auth-modal {
     padding: 32px 24px;
   }
@@ -1343,4 +1174,127 @@ input[type="checkbox"] {
 .audit-list {
   max-height: 520px;
   overflow-y: auto;
+}
+
+/* Shared brand only; recruitment page styling lives in RecruitmentHome.vue. */
+.voxnova-brand {
+  color: #252c2b;
+  font-size: 23px;
+  letter-spacing: -0.7px;
+}
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.language-switch button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 8px 3px;
+  min-height: 40px;
+}
+.language-switch button[aria-pressed="true"] {
+  color: #bd4325;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.auth-language-switch {
+  margin-bottom: 16px;
+  padding-right: 28px;
+}
+.topbar-right {
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .topbar {
+    height: auto;
+    min-height: 88px;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
+:lang(en) .hero h1 {
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+:lang(en) .hero .accent {
+  white-space: normal;
+}
+:lang(en) .progress-steps strong {
+  overflow-wrap: anywhere;
+}
+.voxnova-brand .brand-secondary {
+  color: #626965;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.voxnova-mark {
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  color: #c44524;
+  font-size: 42px;
+  letter-spacing: -10px;
+  padding-right: 10px;
+}
+.voxnova-mark > span {
+  font-size: 24px;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+.public-site {
+  background: #fffcf7;
+  color: #252c2b;
+  min-height: 100vh;
+}
+.public-site > .topbar {
+  background: #fffcf7;
+  padding-inline: max(24px, calc((100% - 1200px) / 2));
+  border-color: #e7e1d8;
+  gap: 20px;
+}
+.public-nav {
+  display: flex;
+  gap: 32px;
+  font-size: 13px;
+}
+.public-nav a:hover {
+  color: #b63f20;
+}
+.public-site .topbar .button,
+.public-site .auth-modal .button {
+  background: #bd4325;
+  border-color: #bd4325;
+  color: white;
+}
+.public-site :is(a, button, summary):focus-visible {
+  outline-color: #bd4325;
+}
+.public-site .auth-modal {
+  color: #252c2b;
+}
+.public-site .auth-modal .eyebrow {
+  color: #9d402b;
+}
+@media (max-width: 760px) {
+  .public-nav {
+    display: none;
+  }
+  .public-site > .topbar {
+    padding-inline: 20px;
+    gap: 12px;
+  }
+  .voxnova-brand {
+    font-size: 20px;
+  }
+  .voxnova-mark {
+    font-size: 36px;
+  }
 }

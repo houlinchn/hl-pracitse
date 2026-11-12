@@ -1182,6 +1182,50 @@ input[type="checkbox"] {
   font-size: 23px;
   letter-spacing: -0.7px;
 }
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.language-switch button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 8px 3px;
+  min-height: 40px;
+}
+.language-switch button[aria-pressed="true"] {
+  color: #bd4325;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.topbar-right {
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .topbar {
+    height: auto;
+    min-height: 88px;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
+:lang(en) .hero h1 {
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+:lang(en) .hero .accent {
+  white-space: normal;
+}
+:lang(en) .progress-steps strong {
+  overflow-wrap: anywhere;
+}
 .voxnova-brand .brand-secondary {
   color: #626965;
   font-size: 10px;

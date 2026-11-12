@@ -64,13 +64,8 @@ test("申请入口、键盘焦点约束、关闭与焦点恢复", async ({ page,
   await expect(dialog.getByRole("heading")).toHaveText("欢迎回来.");
   await dialog.getByRole("button", { name: "关闭登录" }).click();
   await expect(page.getByRole("button", { name: "登录工作台" })).toBeFocused();
-  await page
-    .getByRole("button", { name: "创建申请人账号", exact: false })
-    .click();
-  await expect(dialog.getByRole("heading")).toHaveText("开始你的申请.");
-  await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "已有账号？登录" }).click();
-  await expect(dialog.getByRole("heading")).toHaveText("欢迎回来.");
+  await expect(page.locator(".closing")).toHaveCount(0);
+  await expect(page.getByText("THE NEXT CHAPTER IS YOURS")).toHaveCount(0);
 });
 
 test("加载及认证失败状态可读", async ({ page, scenario }) => {
@@ -152,7 +147,7 @@ test("无查看权限及委托失败（模拟）", async ({ page, scenario }) =>
     page.getByRole("heading", { name: "暂无查看权限" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "AI 委托", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("委托暂时无法加载");
+  await expect(page.getByRole("alert")).toContainText("服务暂时不可用");
   await noOverflow(page);
 });
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-defineEmits<{ apply: []; login: [] }>();
+defineEmits<{ apply: [] }>();
+const { t } = useLocale();
 const questions = [
   {
     title: "如何开始我的申请？",
@@ -21,7 +22,7 @@ const questions = [
     answer:
       "登录申请人门户即可查看最新状态和状态记录。当前线上申请流程支持草稿、已提交和初筛；初筛不代表录用。",
   },
-];
+] as const;
 </script>
 
 <template>
@@ -29,31 +30,35 @@ const questions = [
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow">
-          HELLO, FUTURE EDUCATOR <span aria-hidden="true">↗</span>
+          {{ t("HELLO, FUTURE EDUCATOR") }} <span aria-hidden="true">↗</span>
         </p>
         <h1 id="hero-title">
-          让热爱教学的你，<br />被<span class="accent">更多可能</span>听见。
+          {{ t("让热爱教学的你，") }}<br />{{ t("被")
+          }}<span class="accent">{{ t("更多可能") }}</span
+          >{{ t("听见。") }}
         </h1>
         <p class="hero-intro">
-          每一次表达，都能打开一个新世界。<br />在
-          Voxnova，开启你的在线英语教学新篇章。
+          {{ t("每一次表达，都能打开一个新世界。") }}<br />{{
+            t("在 Voxnova，开启你的在线英语教学新篇章。")
+          }}
         </p>
         <div class="hero-actions">
           <button class="apply-button" @click="$emit('apply')">
-            开始申请 <span aria-hidden="true">↗</span>
+            {{ t("开始申请") }}<span aria-hidden="true">↗</span>
           </button>
           <a class="discover-link" href="#position"
-            >认识教师岗位 <span aria-hidden="true">↓</span></a
+            >{{ t("认识教师岗位") }}<span aria-hidden="true">↓</span></a
           >
         </div>
         <p class="hero-note">
-          <span aria-hidden="true">✳</span> 从一份申请开始，让下一步清晰可见。
+          <span aria-hidden="true">✳</span
+          >{{ t("从一份申请开始，让下一步清晰可见。") }}
         </p>
       </div>
       <div
         class="hero-art"
         role="img"
-        aria-label="原创教学插画：对话、书本与连接彼此的声音"
+        :aria-label="t('原创教学插画：对话、书本与连接彼此的声音')"
       >
         <div class="art-grid" />
         <span class="art-spark" aria-hidden="true">✳</span>
@@ -72,7 +77,7 @@ const questions = [
           </div>
         </div>
         <div class="hello-bubble" aria-hidden="true">
-          Hello<span>你好，新的可能！</span>
+          Hello<span>{{ t("你好，新的可能！") }}</span>
         </div>
         <svg class="book" viewBox="0 0 240 180" aria-hidden="true">
           <path
@@ -102,7 +107,8 @@ const questions = [
     </section>
 
     <div class="chapter-strip" aria-hidden="true">
-      <span>YOUR VOICE MATTERS</span><span>✳</span><span>用英语连接世界</span
+      <span>YOUR VOICE MATTERS</span><span>✳</span
+      ><span>{{ t("用英语连接世界") }}</span
       ><span>✳</span><span>A NEW CHAPTER STARTS HERE</span>
     </div>
 
@@ -112,25 +118,37 @@ const questions = [
       aria-labelledby="position-title"
     >
       <div class="section-intro">
-        <p class="eyebrow">01 / THE OPPORTUNITY</p>
-        <h2 id="position-title">把你的热爱，<br />带进下一间课堂。</h2>
-        <p>从介绍自己开始，<br />让我们认识你与英语教学的故事。</p>
+        <p class="eyebrow">{{ t("01 / THE OPPORTUNITY") }}</p>
+        <h2 id="position-title">
+          {{ t("把你的热爱，") }}<br />{{ t("带进下一间课堂。") }}
+        </h2>
+        <p>
+          {{ t("从介绍自己开始，") }}<br />{{
+            t("让我们认识你与英语教学的故事。")
+          }}
+        </p>
       </div>
       <article class="opportunity-card">
         <div class="opportunity-top">
           <span class="role-icon" aria-hidden="true">Aa</span
-          ><span class="role-label">教师岗位</span>
+          ><span class="role-label">{{ t("教师岗位") }}</span>
         </div>
-        <h3>在线英语教师</h3>
+        <h3>{{ t("在线英语教师") }}</h3>
         <p class="english-label">Online English Teacher</p>
         <p class="role-description">
-          在申请说明中分享你的教学经验或申请意向。先保存、再核对，准备好后提交，让每一步都有记录。
+          {{
+            t(
+              "在申请说明中分享你的教学经验或申请意向。先保存、再核对，准备好后提交，让每一步都有记录。",
+            )
+          }}
         </p>
         <div class="role-facts">
-          <span>线上申请</span><span>支持草稿保存</span><span>状态可查询</span>
+          <span>{{ t("线上申请") }}</span
+          ><span>{{ t("支持草稿保存") }}</span
+          ><span>{{ t("状态可查询") }}</span>
         </div>
         <button class="inline-action" @click="$emit('apply')">
-          从这里开启申请 <span aria-hidden="true">↗</span>
+          {{ t("从这里开启申请") }}<span aria-hidden="true">↗</span>
         </button>
       </article>
     </section>
@@ -142,69 +160,72 @@ const questions = [
     >
       <div class="section-heading-row">
         <div>
-          <p class="eyebrow">02 / YOUR NEXT STEPS</p>
-          <h2 id="process-title">三步，走向新的开始。</h2>
+          <p class="eyebrow">{{ t("02 / YOUR NEXT STEPS") }}</p>
+          <h2 id="process-title">{{ t("三步，走向新的开始。") }}</h2>
         </div>
-        <p>按自己的节奏准备，<br />在同一个地方查看申请状态。</p>
+        <p>
+          {{ t("按自己的节奏准备，") }}<br />{{
+            t("在同一个地方查看申请状态。")
+          }}
+        </p>
       </div>
       <ol class="process-grid">
         <li>
           <span class="step-number">01 <span aria-hidden="true">↗</span></span>
-          <h3>介绍自己</h3>
-          <p>创建账号，填写姓名、联系邮箱和申请说明，随时保存草稿。</p>
-          <span class="step-caption">TELL YOUR STORY</span>
+          <h3>{{ t("介绍自己") }}</h3>
+          <p>
+            {{ t("创建账号，填写姓名、联系邮箱和申请说明，随时保存草稿。") }}
+          </p>
+          <span class="step-caption">{{ t("TELL YOUR STORY") }}</span>
         </li>
         <li>
           <span class="step-number">02 <span aria-hidden="true">↗</span></span>
-          <h3>确认并提交</h3>
-          <p>核对资料后正式提交。提交后资料将锁定，请先确认填写无误。</p>
-          <span class="step-caption">TAKE THE FIRST STEP</span>
+          <h3>{{ t("确认并提交") }}</h3>
+          <p>
+            {{ t("核对资料后正式提交。提交后资料将锁定，请先确认填写无误。") }}
+          </p>
+          <span class="step-caption">{{ t("TAKE THE FIRST STEP") }}</span>
         </li>
         <li>
           <span class="step-number">03 <span aria-hidden="true">✳</span></span>
-          <h3>查看初筛状态</h3>
-          <p>内部员工查看申请并推进初筛。登录门户，查看最新状态与记录。</p>
-          <span class="step-caption">STAY IN THE LOOP</span>
+          <h3>{{ t("查看初筛状态") }}</h3>
+          <p>
+            {{
+              t("内部员工查看申请并推进初筛。登录门户，查看最新状态与记录。")
+            }}
+          </p>
+          <span class="step-caption">{{ t("STAY IN THE LOOP") }}</span>
         </li>
       </ol>
     </section>
 
     <section id="faq" class="faq-section" aria-labelledby="faq-title">
       <div class="section-intro">
-        <p class="eyebrow">03 / GOOD TO KNOW</p>
-        <h2 id="faq-title">你可能想知道。</h2>
-        <p>开始之前，<br />让申请少一点疑问。</p>
+        <p class="eyebrow">{{ t("03 / GOOD TO KNOW") }}</p>
+        <h2 id="faq-title">{{ t("你可能想知道。") }}</h2>
+        <p>{{ t("开始之前，") }}<br />{{ t("让申请少一点疑问。") }}</p>
       </div>
       <div class="faq-list">
         <details v-for="question in questions" :key="question.title">
           <summary>
-            {{ question.title
+            {{ t(question.title)
             }}<span class="faq-plus" aria-hidden="true">+</span>
           </summary>
-          <p>{{ question.answer }}</p>
+          <p>{{ t(question.answer) }}</p>
         </details>
       </div>
     </section>
 
-    <section class="closing" aria-labelledby="closing-title">
-      <span class="closing-spark" aria-hidden="true">✳</span>
-      <p class="eyebrow">THE NEXT CHAPTER IS YOURS</p>
-      <h2 id="closing-title">你的声音，值得被听见。</h2>
-      <p>让一份认真准备的申请，成为新的起点。</p>
-      <button class="apply-button" @click="$emit('apply')">
-        创建申请人账号 <span aria-hidden="true">↗</span></button
-      ><button class="closing-login" @click="$emit('login')">
-        已有账号？登录 →
-      </button>
-    </section>
     <footer class="home-footer">
-      <span class="footer-wordmark">Voxnova<span>让热爱，有回响</span></span>
+      <span class="footer-wordmark"
+        >Voxnova<span>{{ t("让热爱，有回响") }}</span></span
+      >
       <p>
-        在线英语教师招聘<br /><span
-          >当前申请流程：填写资料 · 提交申请 · 初筛</span
-        >
+        {{ t("在线英语教师招聘") }}<br /><span>{{
+          t("当前申请流程：填写资料 · 提交申请 · 初筛")
+        }}</span>
       </p>
-      <a href="#main-content">回到顶部 ↑</a>
+      <a href="#main-content">{{ t("回到顶部 ↑") }}</a>
     </footer>
   </main>
 </template>
@@ -658,50 +679,6 @@ h3 {
   color: var(--muted);
   font-size: 13px;
 }
-.closing {
-  background: #304a40;
-  color: #fff9ed;
-  text-align: center;
-  margin: 0 max(24px, calc((100% - 1200px) / 2));
-  border-radius: 14px;
-  padding: 52px 24px;
-  position: relative;
-}
-.closing .eyebrow {
-  color: #e5c9a4;
-}
-.closing h2 {
-  font-size: 37px;
-}
-.closing > p:not(.eyebrow) {
-  font-size: 13px;
-  color: #d8e0d7;
-  margin-bottom: 26px;
-}
-.closing .apply-button {
-  background: #ffd496;
-  border-color: #ffd496;
-  color: #303c33;
-}
-.closing .apply-button:hover {
-  background: #f5c580;
-}
-.closing-login {
-  display: block;
-  margin: 18px auto 0;
-  padding: 7px;
-  border: 0;
-  background: none;
-  color: #eee8dc;
-  font-size: 11px;
-}
-.closing-spark {
-  position: absolute;
-  left: 6%;
-  top: 30%;
-  color: #d5a36b;
-  font-size: 70px;
-}
 .home-footer {
   max-width: 1248px;
   margin: auto;
@@ -913,23 +890,6 @@ section[id] {
   }
   .faq-list details p {
     font-size: 12px;
-  }
-  .closing {
-    margin-inline: 20px;
-    padding: 38px 19px;
-  }
-  .closing h2 {
-    font-size: 25px;
-    letter-spacing: -0.8px;
-  }
-  .closing .eyebrow {
-    font-size: 8px;
-  }
-  .closing > p:not(.eyebrow) {
-    font-size: 11px;
-  }
-  .closing-spark {
-    display: none;
   }
   .home-footer {
     padding: 32px 24px;

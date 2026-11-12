@@ -5,13 +5,22 @@ import type {
   Audit,
   Delegation,
   Status,
+  StatusEvent,
 } from "~/composables/usePortal";
+
+import {
+  localizedStatuses,
+  localizedTime,
+  localizedError,
+  localizedReason,
+  type MessageKey,
+} from "~/utils/locale";
 
 const account = ref<Account | null>(null);
 const loading = ref(true);
 const busy = ref(false);
-const error = ref("");
-const notice = ref("");
+const error = ref<unknown>(null);
+const notice = ref<MessageKey | "">("");
 const authMode = ref<"login" | "register">("login");
 const authOpen = ref(false);
 const email = ref("");
@@ -30,6 +39,26 @@ const grantScope = ref<"current" | "all">("current");
 const issuedToken = ref("");
 const issuedId = ref("");
 const isStaff = computed(() => account.value?.role === "staff");
+const { locale, t, setLocale } = useLocale(isStaff);
+const statusLabel = computed(() => localizedStatuses(locale.value));
+const formatTime = (value: string) => localizedTime(value, locale.value);
+const displayError = computed(() => localizedError(error.value, locale.value));
+const eventReason = (event: StatusEvent) =>
+  localizedReason(event, locale.value);
+useHead(() => ({
+  title: isStaff.value
+    ? "Voxnova · 招聘工作台"
+    : t("Voxnova · 在线英语教师招聘"),
+  htmlAttrs: { lang: locale.value === "en" ? "en" : "zh-CN" },
+  meta: [
+    {
+      name: "description",
+      content: t(
+        "加入 Voxnova，开启在线英语教学的新可能。在这里填写教师申请、保存草稿、提交资料并查看初筛状态。",
+      ),
+    },
+  ],
+}));
 const can = (permission: string) =>
   !!account.value?.permissions.includes(permission);
 const counts = computed(() => ({
@@ -92,7 +121,10 @@ function clearAccount() {
   Object.assign(draft, { name: "", contact_email: "", statement: "" });
 }
 
-async function perform(task: () => Promise<void>, success = "") {
+async function perform(
+  task: () => Promise<void>,
+  success: MessageKey | "" = "",
+) {
   if (busy.value) return;
   busy.value = true;
   error.value = "";
@@ -101,7 +133,7 @@ async function perform(task: () => Promise<void>, success = "") {
     await task();
     if (success) notice.value = success;
   } catch (e) {
-    error.value = errorText(e);
+    error.value = e;
     if ((e as { status?: number }).status === 401 && account.value)
       clearAccount();
   } finally {
@@ -299,7 +331,7 @@ onMounted(async () => {
       });
     }
   } catch (e) {
-    if ((e as { status?: number }).status !== 401) error.value = errorText(e);
+    if ((e as { status?: number }).status !== 401) error.value = e;
   } finally {
     loading.value = false;
   }
@@ -309,19 +341,52 @@ onMounted(async () => {
 <template>
   <div :class="{ 'public-site': !account }">
     <header class="topbar" :inert="authOpen">
-      <a class="brand voxnova-brand" href="/" aria-label="Voxnova 首页">
+      <a class="brand voxnova-brand" href="/" :aria-label="t('Voxnova 首页')">
         <span class="voxnova-mark" aria-hidden="true">v<span>✳</span></span>
-        <span>Voxnova<span class="brand-secondary">让热爱，有回响</span></span>
+        <span
+          >Voxnova<span class="brand-secondary">{{
+            t("让热爱，有回响")
+          }}</span></span
+        >
       </a>
-      <nav v-if="!account && !loading" class="public-nav" aria-label="首页导航">
-        <a href="#position">教师岗位</a><a href="#process">申请流程</a
-        ><a href="#faq">常见问题</a>
+      <nav
+        v-if="!account && !loading"
+        class="public-nav"
+        :aria-label="t('首页导航')"
+      >
+        <a href="#position">{{ t("教师岗位") }}</a
+        ><a href="#process">{{ t("申请流程") }}</a
+        ><a href="#faq">{{ t("常见问题") }}</a>
       </nav>
       <div class="topbar-right">
+        <div
+          v-if="!isStaff"
+          class="language-switch"
+          role="group"
+          aria-label="中文 / English"
+        >
+          <button
+            type="button"
+            lang="zh-CN"
+            :aria-pressed="locale === 'zh'"
+            @click="setLocale('zh')"
+          >
+            中文
+          </button>
+          <span aria-hidden="true">/</span>
+          <button
+            type="button"
+            lang="en"
+            :aria-pressed="locale === 'en'"
+            @click="setLocale('en')"
+          >
+            English
+          </button>
+        </div>
         <template v-if="account"
           ><span class="account-email">{{ account.email }}</span
           ><button class="text-button" :disabled="busy" @click="logout">
-            退出登录
+            {{ t("退出登录") }}
           </button></template
         ><button
           v-else-if="!loading"
@@ -332,32 +397,35 @@ onMounted(async () => {
             error = '';
           "
         >
-          登录工作台 <span aria-hidden="true">↗</span>
+          {{ t("登录工作台") }}<span aria-hidden="true">↗</span>
         </button>
       </div>
     </header>
-    <div v-if="loading" class="loading" role="status">正在连接工作台…</div>
+    <div v-if="loading" class="loading" role="status">
+      {{ t("正在连接工作台…") }}
+    </div>
     <div v-else :inert="authOpen">
       <div v-if="error" class="message error" role="alert">
-        {{ error
-        }}<button class="text-button" @click="error = ''" aria-label="关闭错误">
+        {{ displayError
+        }}<button
+          class="text-button"
+          @click="error = ''"
+          :aria-label="t('关闭错误')"
+        >
           ×
         </button>
       </div>
       <div v-if="notice" class="message success" role="status">
-        {{ notice }}
+        {{ t(notice) }}
       </div>
-      <RecruitmentHome
-        v-if="!account"
-        @apply="openAuth('register')"
-        @login="openAuth('login')"
-      />
+      <RecruitmentHome v-if="!account" @apply="openAuth('register')" />
       <div v-else class="workspace">
         <aside class="sidebar">
           <div class="workspace-label">
-            {{ isStaff ? "内部工作台" : "申请人门户" }}<span>WORKSPACE</span>
+            {{ isStaff ? "内部工作台" : t("申请人门户")
+            }}<span>{{ isStaff ? "工作台" : t("申请人门户") }}</span>
           </div>
-          <nav aria-label="工作台导航">
+          <nav :aria-label="t('工作台导航')">
             <button
               :class="{ active: section === 'applications' }"
               @click="
@@ -366,7 +434,7 @@ onMounted(async () => {
               "
             >
               <span aria-hidden="true">▤</span
-              >{{ isStaff ? "申请管理" : "我的申请"
+              >{{ isStaff ? "申请管理" : t("我的申请")
               }}<span class="nav-arrow">↗</span></button
             ><button
               v-if="isStaff"
@@ -374,12 +442,12 @@ onMounted(async () => {
               :disabled="busy"
               @click="showDelegations"
             >
-              <span aria-hidden="true">◇</span>AI 委托
+              <span aria-hidden="true">◇</span>{{ t("AI 委托") }}
             </button>
           </nav>
           <div class="sidebar-bottom">
-            <span class="status-dot" /><strong>仅演示数据</strong>
-            <p>核心招聘 POC<br />当前流程止于初筛。</p>
+            <span class="status-dot" /><strong>{{ t("仅演示数据") }}</strong>
+            <p>{{ t("核心招聘 POC") }}<br />{{ t("当前流程止于初筛。") }}</p>
           </div>
         </aside>
         <main class="workspace-main">
@@ -387,17 +455,17 @@ onMounted(async () => {
             <div class="page-title">
               <div>
                 <span class="eyebrow">{{
-                  isStaff ? "RECRUITMENT / 招聘" : "YOUR NEXT CHAPTER"
+                  isStaff ? "招聘" : t("YOUR NEXT CHAPTER")
                 }}</span>
                 <h1>
-                  {{ isStaff ? "申请管理" : "我的申请"
+                  {{ isStaff ? "申请管理" : t("我的申请")
                   }}<span class="title-dot">.</span>
                 </h1>
                 <p>
                   {{
                     isStaff
                       ? "每一份申请，都值得认真对待。"
-                      : "完善你的资料，并在这里查看每一步。"
+                      : t("完善你的资料，并在这里查看每一步。")
                   }}
                 </p>
               </div>
@@ -406,7 +474,7 @@ onMounted(async () => {
                 :disabled="busy"
                 @click="refresh"
               >
-                <span aria-hidden="true">↻</span> 刷新
+                <span aria-hidden="true">↻</span>{{ t("刷新") }}
               </button>
             </div>
             <template v-if="isStaff">
@@ -448,13 +516,13 @@ onMounted(async () => {
                         :disabled="busy"
                         @click="setFilter('submitted')"
                       >
-                        已提交</button
+                        {{ t("已提交") }}</button
                       ><button
                         :class="{ active: filter === 'screening' }"
                         :disabled="busy"
                         @click="setFilter('screening')"
                       >
-                        初筛
+                        {{ t("初筛") }}
                       </button>
                     </div>
                     <span class="muted"
@@ -527,7 +595,7 @@ onMounted(async () => {
                   aria-label="申请详情"
                 >
                   <div class="detail-header">
-                    <span class="eyebrow">APPLICATION DETAILS</span
+                    <span class="eyebrow">申请详情</span
                     ><button
                       class="text-button"
                       aria-label="关闭详情"
@@ -555,14 +623,14 @@ onMounted(async () => {
                     >{{ statusLabel[selected.status] }}</span
                   >
                   <div class="detail-field">
-                    <h3>申请说明</h3>
+                    <h3>{{ t("申请说明") }}</h3>
                     <p class="preserve">{{ selected.statement }}</p>
                   </div>
                   <div class="detail-field">
                     <h3>申请信息</h3>
                     <dl>
                       <dt>演示职位</dt>
-                      <dd>在线英语教师</dd>
+                      <dd>{{ t("在线英语教师") }}</dd>
                       <dt>最后更新</dt>
                       <dd>{{ formatTime(selected.updated_at) }}</dd>
                       <dt>申请编号</dt>
@@ -599,18 +667,18 @@ onMounted(async () => {
                   </div>
                   <div class="detail-field">
                     <h3>
-                      状态记录
-                      <span class="muted">{{ selected.events.length }}</span>
+                      {{ t("状态记录")
+                      }}<span class="muted">{{ selected.events.length }}</span>
                     </h3>
                     <ol class="timeline">
                       <li v-for="event in selected.events" :key="event.id">
                         <strong
                           >{{ statusLabel[event.after]
                           }}<span class="channel">{{
-                            event.channel === "ai" ? "AI 委托" : "网页"
+                            event.channel === "ai" ? t("AI 委托") : t("网页")
                           }}</span></strong
                         >
-                        <p>{{ event.reason }}</p>
+                        <p>{{ eventReason(event) }}</p>
                         <small>{{ formatTime(event.at) }}</small
                         ><small class="mono"
                           >执行主体：{{ event.actor_id }}</small
@@ -655,7 +723,7 @@ onMounted(async () => {
               </div>
             </template>
             <template v-else>
-              <div class="progress-steps" aria-label="申请流程">
+              <div class="progress-steps" :aria-label="t('申请流程')">
                 <div
                   v-for="(status, i) in [
                     'draft',
@@ -680,7 +748,7 @@ onMounted(async () => {
               <div class="applicant-grid">
                 <section class="panel applicant-form">
                   <div class="section-heading">
-                    <h2>申请资料</h2>
+                    <h2>{{ t("申请资料") }}</h2>
                     <span
                       class="pill"
                       :class="selected?.status || 'draft'"
@@ -689,23 +757,24 @@ onMounted(async () => {
                     >
                   </div>
                   <p class="muted form-intro">
-                    演示职位 · 在线英语教师。请使用样例姓名和邮箱。
+                    {{ t("演示职位 · 在线英语教师。请使用样例姓名和邮箱。") }}
                   </p>
                   <form
                     v-if="!selected || selected.status === 'draft'"
+                    novalidate
                     @submit.prevent="saveDraft"
                   >
                     <label for="applicant-name"
-                      >姓名 <span class="required">*</span></label
+                      >{{ t("姓名") }}<span class="required">*</span></label
                     ><input
                       id="applicant-name"
                       v-model="draft.name"
                       required
                       maxlength="100"
                       autocomplete="off"
-                      placeholder="例如：Alex Chen（演示）"
+                      :placeholder="t('例如：Alex Chen（演示）')"
                     /><label for="contact-email"
-                      >联系邮箱 <span class="required">*</span></label
+                      >{{ t("联系邮箱") }}<span class="required">*</span></label
                     ><input
                       id="contact-email"
                       v-model="draft.contact_email"
@@ -714,22 +783,24 @@ onMounted(async () => {
                       maxlength="254"
                       placeholder="alex@example.com"
                     /><label for="statement"
-                      >申请说明 <span class="required">*</span></label
+                      >{{ t("申请说明") }}<span class="required">*</span></label
                     ><textarea
                       id="statement"
                       v-model="draft.statement"
                       required
                       maxlength="5000"
                       rows="7"
-                      placeholder="简单介绍教学经验或申请意向，仅填写演示内容。"
+                      :placeholder="
+                        t('简单介绍教学经验或申请意向，仅填写演示内容。')
+                      "
                     />
                     <div class="form-hint">
                       {{ draft.statement.length }} / 5000
-                      <span>提交后资料将锁定，请先保存并核对。</span>
+                      <span>{{ t("提交后资料将锁定，请先保存并核对。") }}</span>
                     </div>
                     <div class="form-actions">
                       <button class="button secondary" :disabled="busy">
-                        {{ selected ? "保存修改" : "保存草稿" }}</button
+                        {{ selected ? t("保存修改") : t("保存草稿") }}</button
                       ><button
                         v-if="selected"
                         type="button"
@@ -742,7 +813,7 @@ onMounted(async () => {
                         "
                         @click="submitApplication"
                       >
-                        确认提交 →
+                        {{ t("确认提交 →") }}
                       </button>
                     </div>
                   </form>
@@ -750,41 +821,51 @@ onMounted(async () => {
                     ><div class="info-note">
                       {{
                         selected.status === "submitted"
-                          ? "申请已提交，等待初筛。提交后的资料不可编辑。"
-                          : "申请已进入初筛。当前 POC 流程在此结束。"
+                          ? t("申请已提交，等待初筛。提交后的资料不可编辑。")
+                          : t("申请已进入初筛。当前 POC 流程在此结束。")
                       }}
                     </div>
                     <dl class="submitted-fields">
-                      <dt>姓名</dt>
+                      <dt>{{ t("姓名") }}</dt>
                       <dd>{{ selected.name }}</dd>
-                      <dt>联系邮箱</dt>
+                      <dt>{{ t("联系邮箱") }}</dt>
                       <dd>{{ selected.contact_email }}</dd>
-                      <dt>申请说明</dt>
+                      <dt>{{ t("申请说明") }}</dt>
                       <dd class="preserve">{{ selected.statement }}</dd>
                     </dl></template
                   >
                 </section>
                 <aside class="applicant-help">
-                  <span class="eyebrow">EVERY STEP, RECORDED</span>
-                  <h2>申请的每一步，<br />都清晰可见。</h2>
-                  <p>草稿仅你本人可见。提交后，内部员工可查看并推进至初筛。</p>
+                  <span class="eyebrow">{{ t("EVERY STEP, RECORDED") }}</span>
+                  <h2>
+                    {{ t("申请的每一步，") }}<br />{{ t("都清晰可见。") }}
+                  </h2>
+                  <p>
+                    {{
+                      t(
+                        "草稿仅你本人可见。提交后，内部员工可查看并推进至初筛。",
+                      )
+                    }}
+                  </p>
                   <div v-if="selected" class="detail-field">
-                    <h3>状态记录</h3>
+                    <h3>{{ t("状态记录") }}</h3>
                     <ol class="timeline">
                       <li v-for="event in selected.events" :key="event.id">
                         <strong
                           >{{ statusLabel[event.after] }}
                           <span class="channel">{{
-                            event.channel === "ai" ? "AI 委托" : "网页"
+                            event.channel === "ai" ? t("AI 委托") : t("网页")
                           }}</span></strong
                         >
-                        <p>{{ event.reason }}</p>
+                        <p>{{ eventReason(event) }}</p>
                         <small>{{ formatTime(event.at) }}</small>
                       </li>
                     </ol>
                   </div>
                   <p v-else class="help-note">
-                    先保存草稿，再确认提交。<br />本次演示仅支持一份申请。
+                    {{ t("先保存草稿，再确认提交。") }}<br />{{
+                      t("本次演示仅支持一份申请。")
+                    }}
                   </p>
                 </aside>
               </div>
@@ -793,8 +874,8 @@ onMounted(async () => {
           <template v-else>
             <div class="page-title">
               <div>
-                <span class="eyebrow">DELEGATED ACCESS</span>
-                <h1>AI 委托<span class="title-dot">.</span></h1>
+                <span class="eyebrow">委托访问</span>
+                <h1>{{ t("AI 委托") }}<span class="title-dot">.</span></h1>
                 <p>通过短期授权，让 AI 在你的权限范围内协助工作。</p>
               </div>
             </div>
@@ -903,8 +984,8 @@ onMounted(async () => {
             </div>
           </template>
           <footer class="workspace-footer">
-            <span>Voxnova · 招聘工作台</span
-            ><span>演示资料 / 三状态流程 / 可追溯操作</span>
+            <span>{{ t("Voxnova · 招聘工作台") }}</span
+            ><span>{{ t("演示资料 / 三状态流程 / 可追溯操作") }}</span>
           </footer>
         </main>
       </div>
@@ -925,20 +1006,20 @@ onMounted(async () => {
       >
         <button
           class="modal-close text-button"
-          aria-label="关闭登录"
+          :aria-label="t('关闭登录')"
           @click="authOpen = false"
         >
           ×</button
-        ><span class="eyebrow">WELCOME TO VOXNOVA</span>
+        ><span class="eyebrow">{{ t("WELCOME TO VOXNOVA") }}</span>
         <h2 id="auth-heading">
-          {{ authMode === "register" ? "开始你的申请" : "欢迎回来"
+          {{ authMode === "register" ? t("开始你的申请") : t("欢迎回来")
           }}<span class="title-dot">.</span>
         </h2>
         <p class="muted">
           {{
             authMode === "register"
-              ? "创建申请人账号，开始填写申请资料。"
-              : "申请人和内部员工使用各自账号登录。"
+              ? t("创建申请人账号，开始填写申请资料。")
+              : t("申请人和内部员工使用各自账号登录。")
           }}
         </p>
         <div class="tabs auth-tabs">
@@ -949,7 +1030,7 @@ onMounted(async () => {
               error = '';
             "
           >
-            登录</button
+            {{ t("登录") }}</button
           ><button
             :class="{ active: authMode === 'register' }"
             @click="
@@ -957,11 +1038,11 @@ onMounted(async () => {
               error = '';
             "
           >
-            注册申请人
+            {{ t("注册申请人") }}
           </button>
         </div>
-        <form @submit.prevent="authenticate">
-          <label for="auth-email">邮箱</label
+        <form novalidate @submit.prevent="authenticate">
+          <label for="auth-email">{{ t("邮箱") }}</label
           ><input
             id="auth-email"
             v-model="email"
@@ -971,7 +1052,7 @@ onMounted(async () => {
             maxlength="254"
             autocomplete="username"
             placeholder="name@example.com"
-          /><label for="auth-password">密码</label
+          /><label for="auth-password">{{ t("密码") }}</label
           ><input
             id="auth-password"
             v-model="password"
@@ -982,23 +1063,25 @@ onMounted(async () => {
             :autocomplete="
               authMode === 'register' ? 'new-password' : 'current-password'
             "
-            placeholder="12–128 个字符"
+            :placeholder="t('12–128 个字符')"
           /><small class="muted">{{
             authMode === "register"
-              ? "内部员工由专用初始化命令创建。"
-              : "请使用你自己的账号登录。"
+              ? t("内部员工由专用初始化命令创建。")
+              : t("请使用你自己的账号登录。")
           }}</small
           ><button class="button full" :disabled="busy">
             {{
               busy
-                ? "处理中…"
+                ? t("处理中…")
                 : authMode === "register"
-                  ? "创建账号并继续 →"
-                  : "登录 →"
+                  ? t("创建账号并继续 →")
+                  : t("登录 →")
             }}
           </button>
         </form>
-        <div v-if="error" class="auth-error" role="alert">{{ error }}</div>
+        <div v-if="error" class="auth-error" role="alert">
+          {{ displayError }}
+        </div>
       </section>
     </div>
   </div>

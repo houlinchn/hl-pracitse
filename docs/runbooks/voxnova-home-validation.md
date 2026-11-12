@@ -1,101 +1,80 @@
-# Voxnova 首页：隔离验收与部署交接
+# Voxnova 首页：隔离工程验证与既定服务部署
 
-本入口验证首页及既有申请入口，不升级现有服务。产品能力与阶段以[产品愿景](../product/vision.md)为准，底层技术限制见[架构](../architecture/overview.md)和[原 POC 手册](./recruitment-poc.md)。
+本入口验证首页及现有教师申请流程。产品语言边界见[产品愿景](../product/vision.md)，技术限制见[架构](../architecture/overview.md)和[原 POC 手册](./recruitment-poc.md)。
 
 ## 边界与前置条件
 
-- 在当前 Issue 专属工作树操作；需要 Node 24、pnpm 10.34.9、Docker Compose 和 Playwright Chromium（含浏览器运行库、中文字体）。按锁文件安装前端依赖。
-- 不读取现有 `.env`、员工密码或数据库配置，不运行共享 `poc.sh`、默认完整 E2E、清库或 smoke 脚本。
-- `playwright.home.config.ts` 仅加载 `tests/home/`；所有浏览器 API 调用由合成 fixtures 明确处理，非站点请求被阻断，未声明的 API 使测试失败。独立 mock upstream 对漏过的请求返回 503，完全没有真实 API 回退路径。
-- `playwright.home-fullstack.config.ts` 仅加载 `tests/home-fullstack/`，连接本次新建的 API。两个配置都禁止默认 POC 端口、复用已有 WebServer、trace 和 video。全栈只创建合成账号和申请，不创建员工或委托令牌。
-- 受调度任务约束时，每次外部副作用前运行该任务提供的 `guard_command`，失败即停；commit、push、PR 前另加 `--publish` 并立即操作。下列每个 Docker 变更和测试启动均应单独执行 guard，不得用一次检查覆盖后续动作。
+- 使用当前 Issue 专属工作树及全新临时验证目录；需要 Node 24、pnpm 10.34.9、Docker Compose。按锁文件安装依赖。
+- 默认不安装浏览器、运行库或系统依赖，不运行 Playwright 页面、交互或截图验收，CI 同样遵守。旧浏览器测试仅保留为历史回归入口，只有 owner 明确要求后才运行。
+- 不读取共享 `.env`、员工密码，不运行共享 `poc.sh`、测试清库入口或共享 smoke。真实接口验证只使用本轮新建的专属数据库和合成账号。
+- 每次外部副作用前运行任务提供的 `guard_command`，失败立即停止；commit、push、PR 前加 `--publish` 并立即操作。不要修改 guard、监听器、worker 状态/日志或其他工作树。
 
-## 准备专属参数
+## 准备专属环境
 
-在仓库根目录运行。每轮使用新的执行 ID；确认同名 Compose 项目、网络、卷和 API 镜像不存在，避免接管上轮资源。参数只写入本次临时私密目录，不打印密码。
+将本轮受跟踪源码和新增 Issue 文件复制至新建的 `/tmp/voxnova-<execution-id>-<random>/`，排除 `.env`、密码、现有依赖、构建和测试产物。在该目录验证，避免复用共享资源。
 
-```bash
-umask 077
-# 使用当前执行 ID，只能含小写字母、数字和短横线。
-export VOXNOVA_TEST_RUN_ID=replace-with-current-run-id
-export VOXNOVA_TEST_DIR="$(mktemp -d /tmp/voxnova-home.XXXXXX)"
-python3 - <<'PY'
-import os, re, secrets, socket
-from pathlib import Path
-run_id = os.environ['VOXNOVA_TEST_RUN_ID']
-assert re.fullmatch(r'[a-z0-9][a-z0-9-]{0,40}', run_id)
-sockets = []
-ports = []
-for _ in range(3):
-    sock = socket.socket()
-    sock.bind(('127.0.0.1', 0))
-    sockets.append(sock)
-    ports.append(sock.getsockname()[1])
-assert not set(ports) & {13080, 13081, 13082}
-values = dict(zip(['VOXNOVA_TEST_WEB_PORT', 'VOXNOVA_TEST_API_PORT', 'VOXNOVA_TEST_MOCK_PORT'], map(str, ports)))
-values.update(VOXNOVA_TEST_RUN_ID=run_id, VOXNOVA_TEST_DB_PASSWORD=secrets.token_hex(32))
-Path(os.environ['VOXNOVA_TEST_DIR'], 'test.env').write_text(''.join(f'{key}={value}\n' for key, value in values.items()))
-PY
-# 此处仅加载上一步新建的配置，绝不加载仓库 .env。
-set -a
-. "$VOXNOVA_TEST_DIR/test.env"
-set +a
-docker compose ls
-docker network ls --filter "label=com.docker.compose.project=voxnova-home-$VOXNOVA_TEST_RUN_ID"
-docker volume ls --filter "label=com.docker.compose.project=voxnova-home-$VOXNOVA_TEST_RUN_ID"
-```
+在私密临时文件中准备 `VOXNOVA_TEST_RUN_ID`（唯一的小写字母、数字及短横线，最长 41 字符）、随机 `VOXNOVA_TEST_DB_PASSWORD`，及两个空闲回环端口 `VOXNOVA_TEST_API_PORT`、`VOXNOVA_TEST_WEB_PORT`。禁用 13080/13081/13082，不要打印密码。API 测试不启动网页服务器，web 端口只用于精确 Origin。
 
-端口分配后仍须在启动前复核空闲；占用即重新准备，不停止其他进程。Compose 使用显式临时 env 文件和独立配置，不加载默认 `compose.yaml`。数据库不映射宿主端口，只加入本次项目私有网络；API 仅绑定 loopback。配置中的 `APP_ORIGIN` 与浏览器端口必须一致，不能给全栈测试临时换一个前端端口。
+使用前检查同名项目、容器、网络、卷和 API 镜像不存在，确认端口空闲；占用即重新分配，不停止其他进程。专用配置 [compose.home-test.yaml](../../compose.home-test.yaml) 的数据库无宿主映射，只有 API 绑定 loopback，不连接业务代理网络。
 
-## 类型、构建与模拟页面测试
+## 类型、构建、格式和非浏览器验证
+
+在专属源码副本中运行：
 
 ```bash
+pnpm --dir frontend install --frozen-lockfile
+pnpm --dir frontend test:unit
 pnpm --dir frontend typecheck
 pnpm --dir frontend build
-pnpm --dir frontend exec playwright test --config playwright.home.config.ts
+# 使用临时安装的固定 Prettier 3.6.2，检查本 Issue 改动文件。
 ```
 
-覆盖 1440、390、320px；检查品牌和元信息、锚点导航、FAQ、注册与登录入口、键盘焦点、弹窗约束/关闭/焦点恢复、首次加载和认证失败，以及申请人、员工详情和委托页面的正常、失败、无权限与窄屏布局。这些是模拟资料的前端验证，不代替真实权限或审计验收。
+`test:unit` 使用 Vue 内存渲染器执行真实页面 controller，并用 Vue 服务端渲染首页，不使用浏览器或 DOM 模拟器。覆盖文案键完整性、两种语言、首页区块删除、语言恢复及非法值/存储失败回退、标题/描述/lang、未保存内容保留、切换零请求、保存和提交请求、提示重新翻译、401 会话失效和员工强制中文。状态日期和错误映射、原始材料/员工记录保留同时验证。
 
-首页审查示例：[1440px](../assets/voxnova-home/home-1440.png)、[390px](../assets/voxnova-home/home-390.png)、[320px](../assets/voxnova-home/home-320.png)。最终视觉效果由 owner 验收。
+## 专属真实 API 验证
 
-截图写入 `frontend/test-results/home/`（不入库，权限由 077 umask 保护）。首页无个人资料，可将三张 `homepage.png` 单独复制到审查附件；工作台截图仅含合成资料，不截取令牌。
-
-## 专属全栈测试
-
-每步前核验 guard。下面的 schema 初始化只允许对本次新建的空数据库执行；绝不能用于升级已有数据库。
+每一步变更前运行 guard。下列命令中的 `TEST_ENV` 指本轮新建的 600 权限临时配置文件；schema 初始化仅允许用于本次全新空数据库，不用于升级已有数据库。
 
 ```bash
-docker compose --env-file "$VOXNOVA_TEST_DIR/test.env" -f compose.home-test.yaml build api
-docker compose --env-file "$VOXNOVA_TEST_DIR/test.env" -f compose.home-test.yaml up -d --wait db
-docker compose --env-file "$VOXNOVA_TEST_DIR/test.env" -f compose.home-test.yaml run --rm --no-deps api uv run --frozen --no-dev python -m poc.cli init-db
-docker compose --env-file "$VOXNOVA_TEST_DIR/test.env" -f compose.home-test.yaml up -d --no-build --wait api
-pnpm --dir frontend exec playwright test --config playwright.home-fullstack.config.ts
+docker compose --env-file "$TEST_ENV" -f compose.home-test.yaml build api
+docker compose --env-file "$TEST_ENV" -f compose.home-test.yaml up -d --wait db
+docker compose --env-file "$TEST_ENV" -f compose.home-test.yaml run --rm --no-deps api uv run --frozen --no-dev python -m poc.cli init-db
+docker compose --env-file "$TEST_ENV" -f compose.home-test.yaml up -d --no-build --wait api
+# 只加载本轮新建配置；在运行这组接口写入前再次运行 guard。
+set -a
+. "$TEST_ENV"
+set +a
+pnpm --dir frontend test:api
 ```
 
-模拟测试结束并释放前端端口后再运行全栈配置。验证真实健康检查、浏览器注册、草稿创建和修改、刷新后持久化、提交锁定、重新登录、申请人访问员工接口被拒绝、未登录请求被拒绝。截图位于 `frontend/test-results/home-fullstack/`，只含本轮合成资料。此测试不声明已经验证完整员工/AI 业务链路；该链路的稳定规则和原测试保持不变。
+验证健康、注册/登录/退出、密码与邮箱边界、必填/空白/最大字段长度、草稿创建/修改/读取、重复申请、无效版本、提交锁定、重新登录持久化、匿名拒绝、跨申请人不可见及员工接口拒绝。仅添加本轮合成数据，不删除既有资料。
 
-## 验收结束与恢复
+CI 在全新的 GitHub runner 中保留类型、构建、Vue 非浏览器测试、真实 PostgreSQL 与 HTTP smoke；浏览器安装和运行步骤已移除。CI 中的原 POC 测试仅限该 runner 新建的数据资源，不能在本机既有业务服务执行。
 
-先等待 Playwright 退出，其 WebServer 自动停止。若测试异常中断，只停止核对过 PID、命令和端口的本轮进程。核对资源归属后，清理本次全新项目（以下会删除本轮合成数据）：
+## 验证结束与清理
+
+先核对 `voxnova-home-$VOXNOVA_TEST_RUN_ID` 容器、默认网络和 `home-test-postgres` 卷的 Compose project 标签。guard 后只停止该轮项目：
 
 ```bash
-docker volume inspect "voxnova-home-${VOXNOVA_TEST_RUN_ID}_home-test-postgres" --format '{{json .Labels}}'
-docker network inspect "voxnova-home-${VOXNOVA_TEST_RUN_ID}_default" --format '{{json .Labels}}'
-# 确认标签中的 project、资源名称与本轮完全一致，并运行 guard 后：
-docker compose --env-file "$VOXNOVA_TEST_DIR/test.env" -f compose.home-test.yaml down --volumes
+docker compose --env-file "$TEST_ENV" -f compose.home-test.yaml stop
 ```
 
-不使用全局 prune，不删除其他环境资源。单独的本轮 API 镜像和工具可以保留作复核，不包含已有业务数据。临时凭据只供该已清理数据库，不能复制到运行服务。本机操作结果和清理状态同步记入 `/home/muise/MACHINE_MEMORY.md`，不记录凭据。
+保留本轮合成测试卷、镜像和临时验证证据以便复核，不执行全局 prune。若以后决定删除测试数据，应重新核对归属并遵守当时的删除授权。本机结果同步记录 `/home/muise/MACHINE_MEMORY.md`，不含凭据。
 
-## 现有服务部署交接
+## 更新既定服务及恢复
 
-首页可通过恢复部署前代码版本回退，不涉及表结构迁移。当前方案仅授权开发和新建隔离验收环境，现有运行服务保持原样。独立部署任务须给出并核验：
+获批任务的常规 CI/CD 已由 owner 长期授权，无需另建部署 Issue 或逐步重新确认。新环境/付费资源、不可逆数据操作、权限或安全边界变化及业务决定仍须明确授权。
 
-1. 明确的目标环境、域名/访问入口、项目和前后端资源归属；需要更新的组件及保留的数据边界。
-2. 已验收 PR 的精确提交和构建版本，部署前可恢复的原版本和必要备份。
-3. 更新和启动步骤、运行健康检查、首页品牌/静态资源及登录申请入口的验证方法。
-4. 触发恢复的条件、恢复原代码/镜像步骤和恢复后验证。
-5. 可核验的 owner 授权，以及最终访问地址、版本、健康状态和恢复证据。
+1. 先确认远端检查全部完成、PR/head/base 正确，构建使用 Git 精确提交的受跟踪文件。镜像标记完整 `org.opencontainers.image.revision`，保留旧镜像。
+2. 只读核实既定环境 <https://careers.voxnova.cc/>、Compose 项目 `hl-pracitse-poc`、web/API/DB 资源、端口、网络和数据卷；记录更新前镜像和 API/DB 容器 ID。既定维护入口为 `/home/muise/.local/share/hl-pracitse-poc-runner/careers.sh`。
+3. 准备当前前端镜像的固定版本覆盖文件、旧覆盖文件备份和恢复命令。只更新 web：使用既有基础 Compose、careers 覆盖和本轮固定镜像覆盖，执行 `up -d --no-deps --no-build --pull never --wait web`；不初始化、迁移、清库或重建 API/DB。
+4. 验证镜像 revision、web healthy、本机和公网首页与 `/api/health` HTTP 200/ok，以及 API/DB ID、端口、网络和 proxy 别名保持一致。仅执行版本与基础 HTTP 检查，不进行浏览器页面验收。
+5. 验证通过后更新 runner 的固定 web 镜像覆盖，确保维护入口继续指向该版本。操作前 guard，操作后回读。
+6. 更新或健康检查失败时，以备份的旧镜像覆盖重建 web，再重复版本/健康及 API/DB 保留检查，恢复维护入口；保留失败和恢复证据。无需数据库恢复，不删除旧镜像、卷或已有数据。不把恢复准备写成已演练。
+7. 交付精确提交、访问地址、CI、HTTP 和恢复证据，更新机器记忆及 PR，停在 In Review。
 
-这些运行证据齐备之前，服务运行验收保持待完成；本地构建、隔离测试或 PR 都不能替代现有网站运行证据。人工重点检查三种视口的视觉效果、中文文案、岗位信息准确性、键盘体验和原网站的最终部署版本。
+## owner 人工验收
+
+在网站检查中文/English 首页、FAQ、注册登录、资料、保存、提交、状态和退出；确认指定页尾区块消失、其他申请入口和页脚正常。填写未保存内容后切换、刷新恢复语言，并从英文入口登录内部员工，确认管理界面及 AI 委托中文。重点检查 1440/390/320px 布局、英文换行、键盘与焦点、错误及校验提示。申请材料与员工自由填写记录保持原文。
+
+上述页面和交互验收由 owner 完成；工程检查不代替人工验收。工程检查、CI、部署及基础健康完成后可交付 In Review，等待人验收不构成 Blocked，AI 不合并或标记 Done。

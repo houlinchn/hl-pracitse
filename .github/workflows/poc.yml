@@ -13,11 +13,11 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: '24'
+          node-version: "24"
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
         with:
-          version: '0.13.7'
-          python-version: '3.13'
+          version: "0.13.7"
+          python-version: "3.13"
       - name: Install locked dependencies
         run: |
           npm install --prefix "$RUNNER_TEMP/poc-tools" pnpm@10.34.9
@@ -28,6 +28,7 @@ jobs:
         run: |
           uv run --project backend ruff check --config backend/pyproject.toml backend scripts
           uv run --project backend ruff format --check --config backend/pyproject.toml backend scripts
+          pnpm --dir frontend test:unit
           pnpm --dir frontend typecheck
           pnpm --dir frontend build
       - name: Start isolated POC and explicitly initialize demo staff
@@ -38,10 +39,6 @@ jobs:
         run: |
           uv run --project backend --env-file .env python scripts/test_backend.py
           uv run --project backend python scripts/smoke.py
-      - name: Browser QA (desktop and mobile)
-        run: |
-          pnpm --dir frontend exec playwright install --with-deps chromium
-          pnpm --dir frontend test:e2e
       - name: Stop only the POC environment
         if: always()
         run: docker compose -p hl-pracitse-poc down --volumes

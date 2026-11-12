@@ -8,7 +8,9 @@
     "build": "nuxt build",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:unit": "node --test tests/unit/*.test.mjs",
+    "test:api": "node --test tests/api/*.test.mjs"
   },
   "dependencies": {
     "nuxt": "^3.17.0",

@@ -362,7 +362,7 @@ test("actual applicant controller restores language, preserves unsaved fields an
   app.unmount();
 });
 test("actual applicant and authentication templates render complete English copy", async () => {
-  const { app, vm, item } = await mount();
+  const { app, vm, item, calls } = await mount();
   const assertEnglish = (html) => {
     const withoutUserContent = html
       .replaceAll("中文", "")
@@ -398,7 +398,15 @@ test("actual applicant and authentication templates render complete English copy
     assertEnglish(html);
     assert.ok(html.includes(messages["邮箱"].en));
     assert.ok(html.includes(messages["密码"].en));
+    assert.ok(html.includes('class="language-switch auth-language-switch"'));
   }
+  vm.email = "unsaved@example.com";
+  vm.password = "unsaved-synthetic-password";
+  const count = calls.length;
+  vm.setLocale("zh");
+  assert.equal(vm.email, "unsaved@example.com");
+  assert.equal(vm.password, "unsaved-synthetic-password");
+  assert.equal(calls.length, count);
   app.unmount();
 });
 test("errors retranslate after a switch, including unauthorized session expiry", async () => {

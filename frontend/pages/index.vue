@@ -1009,8 +1009,32 @@ onMounted(async () => {
           :aria-label="t('关闭登录')"
           @click="authOpen = false"
         >
-          ×</button
-        ><span class="eyebrow">{{ t("WELCOME TO VOXNOVA") }}</span>
+          ×
+        </button>
+        <div
+          class="language-switch auth-language-switch"
+          role="group"
+          aria-label="中文 / English"
+        >
+          <button
+            type="button"
+            lang="zh-CN"
+            :aria-pressed="locale === 'zh'"
+            @click="setLocale('zh')"
+          >
+            中文
+          </button>
+          <span aria-hidden="true">/</span>
+          <button
+            type="button"
+            lang="en"
+            :aria-pressed="locale === 'en'"
+            @click="setLocale('en')"
+          >
+            English
+          </button>
+        </div>
+        <span class="eyebrow">{{ t("WELCOME TO VOXNOVA") }}</span>
         <h2 id="auth-heading">
           {{ authMode === "register" ? t("开始你的申请") : t("欢迎回来")
           }}<span class="title-dot">.</span>

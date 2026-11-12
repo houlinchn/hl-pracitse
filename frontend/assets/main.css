@@ -1200,6 +1200,10 @@ input[type="checkbox"] {
   text-decoration: underline;
   text-underline-offset: 5px;
 }
+.auth-language-switch {
+  margin-bottom: 16px;
+  padding-right: 28px;
+}
 .topbar-right {
   flex-wrap: wrap;
 }

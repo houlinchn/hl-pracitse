@@ -130,8 +130,7 @@ const questions = [
       </div>
       <article class="opportunity-card">
         <div class="opportunity-top">
-          <span class="role-icon" aria-hidden="true">Aa</span
-          ><span class="role-label">{{ t("教师岗位") }}</span>
+          <span class="role-label">{{ t("教师岗位") }}</span>
         </div>
         <h3>{{ t("在线英语教师") }}</h3>
         <p class="english-label">Online English Teacher</p>
@@ -526,23 +525,17 @@ h2 {
 }
 .opportunity-top {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
-.role-icon {
-  font:
-    31px Georgia,
-    serif;
+.role-label {
   color: var(--orange);
   background: #fff1e2;
   border-radius: 10px;
-  padding: 10px;
-}
-.role-label {
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  padding: 6px 12px;
-  font-size: 10px;
+  max-width: 100%;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 h3 {
   font-size: 24px;

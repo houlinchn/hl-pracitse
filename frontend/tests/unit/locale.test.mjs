@@ -321,6 +321,20 @@ test("actual home renders both languages with no closing section and remaining a
     assert.ok(html.includes(messages["回到顶部 ↑"][locale]));
     assert.ok(!html.includes('class="closing"'));
     assert.ok(!html.includes("THE NEXT CHAPTER IS YOURS"));
+    const card = html.match(
+      /<article class="opportunity-card"[^>]*>([\s\S]*?)<\/article>/,
+    )?.[1];
+    assert.ok(card);
+    assert.ok(!card.includes("Aa"));
+    assert.equal(card.split(messages["教师岗位"][locale]).length - 1, 1);
+    const label = card.match(
+      /<span class="role-label"[^>]*>[\s\S]*?<\/span>/,
+    )?.[0];
+    assert.ok(label?.includes(messages["教师岗位"][locale]));
+    assert.ok(!label.includes('aria-hidden="true"'));
+    assert.ok(card.includes(messages["在线英语教师"][locale]));
+    assert.ok(card.includes(messages["从这里开启申请"][locale]));
+    assert.ok(card.includes(messages["支持草稿保存"][locale]));
     if (locale === "en") assert.ok(!/[\u3400-\u9fff]/u.test(html));
   }
 });

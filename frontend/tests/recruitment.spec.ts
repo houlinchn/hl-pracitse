@@ -19,12 +19,12 @@ test("页面闭环、持久化、员工审核、AI 对等与撤销", async ({
   const consoleErrors: string[] = [];
   page.on("pageerror", (error) => consoleErrors.push(error.name));
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /开启新的/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /让热爱教学的你/ })).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("landing.png"),
     fullPage: true,
   });
-  await page.getByRole("button", { name: "创建申请人账号" }).click();
+  await page.getByRole("button", { name: "开始申请" }).click();
   await page.getByLabel("邮箱", { exact: true }).fill(email);
   await page.getByLabel("密码", { exact: true }).fill(password);
   await page.getByRole("button", { name: "创建账号并继续" }).click();

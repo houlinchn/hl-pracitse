@@ -45,17 +45,3 @@ export type Delegation = {
   revoked: boolean;
   expired: boolean;
 };
-export const statusLabel: Record<Status, string> = {
-  draft: "草稿",
-  submitted: "已提交",
-  screening: "初筛",
-};
-export const formatTime = (value: string) =>
-  new Date(value).toLocaleString("zh-CN", { hour12: false });
-export const errorText = (error: unknown): string => {
-  const e = error as { data?: { detail?: string; fields?: string[] } };
-  const detail = e.data?.detail || "服务暂时不可用，请稍后重试";
-  return e.data?.fields?.length
-    ? `${detail}（${e.data.fields.join("、")}）`
-    : detail;
-};

@@ -73,7 +73,6 @@ const authDialog = ref<HTMLElement | null>(null);
 let previousFocus: HTMLElement | null = null;
 watch(authOpen, async (opened) => {
   if (opened) {
-    previousFocus = document.activeElement as HTMLElement | null;
     await nextTick();
     authDialog.value?.querySelector<HTMLInputElement>("#auth-email")?.focus();
   } else {
@@ -82,7 +81,8 @@ watch(authOpen, async (opened) => {
     previousFocus?.focus();
   }
 });
-function openAuth(mode: "login" | "register") {
+function openAuth(mode: "login" | "register", event: MouseEvent) {
+  previousFocus = event.currentTarget as HTMLElement;
   authMode.value = mode;
   error.value = "";
   authOpen.value = true;
@@ -340,14 +340,26 @@ onMounted(async () => {
 
 <template>
   <div :class="{ 'public-site': !account }">
+    <a
+      v-if="!account && !loading"
+      class="home-skip"
+      href="#main-content"
+      :inert="authOpen"
+      >{{ t("跳到正文") }}</a
+    >
     <header class="topbar" :inert="authOpen">
       <a class="brand voxnova-brand" href="/" :aria-label="t('Voxnova 首页')">
-        <span class="voxnova-mark" aria-hidden="true">v<span>✳</span></span>
-        <span
-          >Voxnova<span class="brand-secondary">{{
-            t("让热爱，有回响")
-          }}</span></span
+        <span v-if="!account" class="public-wordmark" lang="en"
+          >Voxnova<i>.</i></span
         >
+        <template v-else
+          ><span class="voxnova-mark" aria-hidden="true">v<span>✳</span></span>
+          <span
+            >Voxnova<span class="brand-secondary">{{
+              t("让热爱，有回响")
+            }}</span></span
+          >
+        </template>
       </a>
       <nav
         v-if="!account && !loading"
@@ -391,13 +403,10 @@ onMounted(async () => {
         ><button
           v-else-if="!loading"
           class="button small"
-          @click="
-            authOpen = true;
-            authMode = 'login';
-            error = '';
-          "
+          @click="openAuth('login', $event)"
+          :aria-label="t('登录工作台')"
         >
-          {{ t("登录工作台") }}<span aria-hidden="true">↗</span>
+          {{ t("登录") }}
         </button>
       </div>
     </header>
@@ -418,7 +427,7 @@ onMounted(async () => {
       <div v-if="notice" class="message success" role="status">
         {{ t(notice) }}
       </div>
-      <RecruitmentHome v-if="!account" @apply="openAuth('register')" />
+      <RecruitmentHome v-if="!account" @apply="openAuth('register', $event)" />
       <div v-else class="workspace">
         <aside class="sidebar">
           <div class="workspace-label">

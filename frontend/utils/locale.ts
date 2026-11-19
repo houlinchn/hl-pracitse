@@ -247,187 +247,63 @@ export const messages = {
     zh: "初筛",
     en: "Screening",
   },
-  "让热爱教学的你，": {
-    zh: "让热爱教学的你，",
-    en: "Let your passion for teaching",
-  },
-  被: {
-    zh: "被",
-    en: "open ",
-  },
-  更多可能: {
-    zh: "更多可能",
-    en: "new possibilities",
-  },
-  "听见。": {
-    zh: "听见。",
-    en: ".",
-  },
-  "每一次表达，都能打开一个新世界。": {
-    zh: "每一次表达，都能打开一个新世界。",
-    en: "Every voice can open a new world.",
-  },
-  "在 Voxnova，开启你的在线英语教学新篇章。": {
-    zh: "在 Voxnova，开启你的在线英语教学新篇章。",
-    en: "Begin your next chapter in online English teaching at Voxnova.",
-  },
-  开始申请: {
-    zh: "开始申请",
-    en: "Start applying",
-  },
-  认识教师岗位: {
-    zh: "认识教师岗位",
-    en: "Explore the teaching role",
-  },
-  "从一份申请开始，让下一步清晰可见。": {
-    zh: "从一份申请开始，让下一步清晰可见。",
-    en: "Start with an application. See what comes next.",
-  },
-  "原创教学插画：对话、书本与连接彼此的声音": {
-    zh: "原创教学插画：对话、书本与连接彼此的声音",
-    en: "Original teaching illustration: conversation, books and voices that connect us",
-  },
-  "你好，新的可能！": {
-    zh: "你好，新的可能！",
-    en: "Hello, new possibilities!",
-  },
-  用英语连接世界: {
-    zh: "用英语连接世界",
-    en: "CONNECT THROUGH ENGLISH",
-  },
-  "把你的热爱，": {
-    zh: "把你的热爱，",
-    en: "Bring your passion",
-  },
-  "带进下一间课堂。": {
-    zh: "带进下一间课堂。",
-    en: "to your next classroom.",
-  },
-  "从介绍自己开始，": {
-    zh: "从介绍自己开始，",
-    en: "Start by introducing yourself.",
-  },
-  "让我们认识你与英语教学的故事。": {
-    zh: "让我们认识你与英语教学的故事。",
-    en: "Share your story of teaching English.",
-  },
-  在线英语教师: {
-    zh: "在线英语教师",
-    en: "Online English Teacher",
-  },
-  "在申请说明中分享你的教学经验或申请意向。先保存、再核对，准备好后提交，让每一步都有记录。":
+  "Voxnova 教师招聘": { zh: "Voxnova 教师招聘", en: "Careers at Voxnova" },
+  在线英语: { zh: "在线英语", en: "Teach English" },
+  教师: { zh: "教师", en: "online." },
+  "想来教英语？写下你的教学经历，或说说你为什么想成为教师。申请可以先存为草稿，准备好再提交。":
     {
-      zh: "在申请说明中分享你的教学经验或申请意向。先保存、再核对，准备好后提交，让每一步都有记录。",
-      en: "Share your teaching experience or interest in your application statement. Save, review and submit when ready, with every step recorded.",
+      zh: "想来教英语？写下你的教学经历，或说说你为什么想成为教师。申请可以先存为草稿，准备好再提交。",
+      en: "Tell us about your teaching experience or why you’d like to teach. You can save a draft and come back when you’re ready.",
     },
-  线上申请: {
-    zh: "线上申请",
-    en: "Apply online",
+  开始申请: { zh: "开始申请", en: "Start an application" },
+  了解申请流程: { zh: "了解申请流程", en: "See how to apply" },
+  申请怎么走: { zh: "申请怎么走", en: "How to apply" },
+  填写申请资料: { zh: "填写申请资料", en: "Introduce yourself" },
+  "创建账号，填写姓名、联系邮箱和申请说明。写到一半可以保存草稿。": {
+    zh: "创建账号，填写姓名、联系邮箱和申请说明。写到一半可以保存草稿。",
+    en: "Create an account and add your name, contact email and a short statement. You can save a draft.",
   },
-  支持草稿保存: {
-    zh: "支持草稿保存",
-    en: "Save your draft",
+  核对后提交: { zh: "核对后提交", en: "Review and submit" },
+  "提交后资料会锁定，请先核对邮箱和申请说明。": {
+    zh: "提交后资料会锁定，请先核对邮箱和申请说明。",
+    en: "Check your details carefully. Your application is locked once you submit it.",
   },
-  状态可查询: {
-    zh: "状态可查询",
-    en: "Track your status",
+  查看初筛状态: { zh: "查看初筛状态", en: "Follow your application" },
+  "登录申请人门户，查看最新状态和记录。当前流程到初筛为止。": {
+    zh: "登录申请人门户，查看最新状态和记录。当前流程到初筛为止。",
+    en: "Log in to see your latest status and its history. The current process ends at initial screening.",
   },
-  从这里开启申请: {
-    zh: "从这里开启申请",
-    en: "Start your application here",
-  },
-  "三步，走向新的开始。": {
-    zh: "三步，走向新的开始。",
-    en: "Three steps to a new beginning.",
-  },
-  "按自己的节奏准备，": {
-    zh: "按自己的节奏准备，",
-    en: "Prepare at your own pace.",
-  },
-  "在同一个地方查看申请状态。": {
-    zh: "在同一个地方查看申请状态。",
-    en: "Follow your application in one place.",
-  },
-  介绍自己: {
-    zh: "介绍自己",
-    en: "Introduce yourself",
-  },
-  "创建账号，填写姓名、联系邮箱和申请说明，随时保存草稿。": {
-    zh: "创建账号，填写姓名、联系邮箱和申请说明，随时保存草稿。",
-    en: "Create an account, enter your name, contact email and application statement, and save your draft as you go.",
-  },
-  确认并提交: {
-    zh: "确认并提交",
-    en: "Review and submit",
-  },
-  "核对资料后正式提交。提交后资料将锁定，请先确认填写无误。": {
-    zh: "核对资料后正式提交。提交后资料将锁定，请先确认填写无误。",
-    en: "Review your details before submitting. They will be locked after submission, so check them carefully first.",
-  },
-  查看初筛状态: {
-    zh: "查看初筛状态",
-    en: "Follow your screening status",
-  },
-  "内部员工查看申请并推进初筛。登录门户，查看最新状态与记录。": {
-    zh: "内部员工查看申请并推进初筛。登录门户，查看最新状态与记录。",
-    en: "Staff review submitted applications and move them to screening. Sign in to see the latest status and history.",
-  },
-  "你可能想知道。": {
-    zh: "你可能想知道。",
-    en: "Good to know.",
-  },
-  "开始之前，": {
-    zh: "开始之前，",
-    en: "Before you begin,",
-  },
-  "让申请少一点疑问。": {
-    zh: "让申请少一点疑问。",
-    en: "find answers to your questions.",
-  },
-  "如何开始我的申请？": {
-    zh: "如何开始我的申请？",
-    en: "How do I start my application?",
-  },
-  "点击「开始申请」创建申请人账号，然后填写姓名、联系邮箱和申请说明。已有账号可直接登录。":
-    {
-      zh: "点击「开始申请」创建申请人账号，然后填写姓名、联系邮箱和申请说明。已有账号可直接登录。",
-      en: "Select “Start applying” to create an applicant account, then enter your name, contact email and application statement. Already have an account? Simply log in.",
-    },
+  申请前常见问题: { zh: "申请前常见问题", en: "Before you apply" },
   "资料没写完，可以下次继续吗？": {
     zh: "资料没写完，可以下次继续吗？",
-    en: "Can I finish my application later?",
+    en: "Can I finish my draft later?",
   },
-  "可以。先保存草稿，下次登录后可以继续编辑。草稿仅你本人可见，请在确认无误后提交。":
-    {
-      zh: "可以。先保存草稿，下次登录后可以继续编辑。草稿仅你本人可见，请在确认无误后提交。",
-      en: "Yes. Save your draft and continue editing the next time you log in. Only you can see your draft. Review your details before submitting.",
-    },
+  "可以。先保存草稿，下次登录同一账号继续填写。草稿仅你本人可见。": {
+    zh: "可以。先保存草稿，下次登录同一账号继续填写。草稿仅你本人可见。",
+    en: "Yes. Save your draft, then sign in to the same account to continue. Only you can see your draft.",
+  },
   "提交后还能修改吗？": {
     zh: "提交后还能修改吗？",
-    en: "Can I edit my application after submitting?",
+    en: "Can I edit a submitted application?",
   },
-  "提交后的资料将锁定，不能继续编辑。请在提交前仔细核对姓名、联系邮箱和申请说明。":
-    {
-      zh: "提交后的资料将锁定，不能继续编辑。请在提交前仔细核对姓名、联系邮箱和申请说明。",
-      en: "Submitted details are locked and cannot be edited. Carefully review your name, contact email and application statement before submitting.",
-    },
+  "提交后资料将锁定，请在提交前仔细核对。": {
+    zh: "提交后资料将锁定，请在提交前仔细核对。",
+    en: "Submitted details are locked. Please check them before submitting.",
+  },
   "在哪里查看申请状态？": {
     zh: "在哪里查看申请状态？",
-    en: "Where can I check my application status?",
+    en: "Where can I see my status?",
   },
-  "登录申请人门户即可查看最新状态和状态记录。当前线上申请流程支持草稿、已提交和初筛；初筛不代表录用。":
-    {
-      zh: "登录申请人门户即可查看最新状态和状态记录。当前线上申请流程支持草稿、已提交和初筛；初筛不代表录用。",
-      en: "Log in to the applicant portal to see your latest status and history. The current online process supports Draft, Submitted and Screening. Screening is not a job offer.",
-    },
-  在线英语教师招聘: {
-    zh: "在线英语教师招聘",
-    en: "Online English teacher recruitment",
+  "登录申请人门户即可查看最新状态及状态记录。": {
+    zh: "登录申请人门户即可查看最新状态及状态记录。",
+    en: "Log in to your applicant portal to see your latest status and history.",
   },
-  "当前申请流程：填写资料 · 提交申请 · 初筛": {
-    zh: "当前申请流程：填写资料 · 提交申请 · 初筛",
-    en: "Current process: Complete details · Submit application · Screening",
+  英语口语课示例: {
+    zh: "英语口语课示例",
+    en: "Example English conversation lesson",
   },
+  在线英语教师: { zh: "在线英语教师", en: "Online English Teacher" },
+  跳到正文: { zh: "跳到正文", en: "Skip to content" },
   "回到顶部 ↑": {
     zh: "回到顶部 ↑",
     en: "Back to top ↑",
@@ -526,16 +402,6 @@ export const messages = {
     en: "The application is in screening. The reason and actor have been recorded.",
   },
   "委托已撤销。": { zh: "委托已撤销。", en: "Delegation revoked." },
-  "HELLO, FUTURE EDUCATOR": {
-    zh: "你好，未来的教育者",
-    en: "HELLO, FUTURE EDUCATOR",
-  },
-  "01 / THE OPPORTUNITY": { zh: "01 / 教师岗位", en: "01 / THE OPPORTUNITY" },
-  "02 / YOUR NEXT STEPS": { zh: "02 / 申请流程", en: "02 / YOUR NEXT STEPS" },
-  "03 / GOOD TO KNOW": { zh: "03 / 常见问题", en: "03 / GOOD TO KNOW" },
-  "TELL YOUR STORY": { zh: "分享你的故事", en: "TELL YOUR STORY" },
-  "TAKE THE FIRST STEP": { zh: "迈出第一步", en: "TAKE THE FIRST STEP" },
-  "STAY IN THE LOOP": { zh: "随时了解状态", en: "STAY IN THE LOOP" },
   "YOUR NEXT CHAPTER": { zh: "你的新篇章", en: "YOUR NEXT CHAPTER" },
   "EVERY STEP, RECORDED": {
     zh: "每一步，都有记录",

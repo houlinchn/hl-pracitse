@@ -13,7 +13,7 @@ test("首页内容、元信息、导航与响应式截图", async ({ page, scena
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "让热爱教学的你，被更多可能听见。",
+    "在线英语教师",
   );
   await expect(page).toHaveTitle("Voxnova · 在线英语教师招聘");
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
@@ -21,13 +21,14 @@ test("首页内容、元信息、导航与响应式截图", async ({ page, scena
     /Voxnova/,
   );
   await expect(page.getByRole("link", { name: "Voxnova 首页" })).toBeVisible();
-  await page.getByRole("link", { name: "认识教师岗位" }).click();
-  await expect(page).toHaveURL(/#position$/);
+  await page.getByRole("link", { name: "了解申请流程" }).click();
+  await expect(page).toHaveURL(/#process$/);
+  await expect(page.locator("details[open]")).toContainText("草稿仅你本人可见");
   await page
     .locator("summary")
     .filter({ hasText: "资料没写完，可以下次继续吗？" })
     .click();
-  await expect(page.locator("details[open]")).toContainText("草稿仅你本人可见");
+  await expect(page.locator("details[open]")).toHaveCount(0);
   await noOverflow(page);
   await page.getByRole("link", { name: "回到顶部" }).click();
   await page.screenshot({

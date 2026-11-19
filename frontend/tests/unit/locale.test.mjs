@@ -312,31 +312,126 @@ test("system event reasons are translated without translating staff prose or cha
     );
   }
 });
-test("actual home renders both languages with no closing section and remaining application entry", async () => {
+test("home renders the role, lesson and reachable application flow in both languages", async () => {
+  const { app, vm } = await mount();
   for (const locale of ["zh", "en"]) {
-    states = new Map([["applicant-language", vue.ref(locale)]]);
-    const html = await renderToString(vue.createSSRApp(home));
-    assert.ok(html.includes(messages["开始申请"][locale]));
+    vm.setLocale(locale);
+    const html = await renderPage(vm, { account: null });
+    const textOf = (markup) => markup.replace(/<[^>]+>/g, "").trim();
+    const title = html.match(/<h1[^>]*>(.*?)<\/h1>/s);
+    assert.equal(
+      textOf(title[1]),
+      locale === "en" ? "Teach English online." : "在线英语教师",
+    );
+    const links = [...html.matchAll(/href="#([^"]+)"/g)].map(
+      (match) => match[1],
+    );
+    assert.equal(links[0], "main-content");
+    for (const id of links) assert.ok(html.includes(`id="${id}"`), id);
+    assert.match(
+      html,
+      /<div class="actions"[^>]*>.*?<button.*?<a href="#process"/s,
+    );
+    assert.ok(
+      html.indexOf(messages["开始申请"][locale]) < html.indexOf("<figure"),
+    );
+    const lesson = html.match(/<figure[^>]*>(.*?)<\/figure>/s)[1];
+    assert.match(lesson, /<div class="paper" lang="en"/);
+    assert.match(
+      textOf(lesson),
+      /Tell me more about it\..*Invite a longer answer\..*What happened next\?/s,
+    );
+    assert.equal([...html.matchAll(/<details[\s>]/g)].length, 3);
     assert.ok(html.includes(messages["资料没写完，可以下次继续吗？"][locale]));
     assert.ok(html.includes(messages["回到顶部 ↑"][locale]));
     assert.ok(!html.includes('class="closing"'));
-    assert.ok(!html.includes("THE NEXT CHAPTER IS YOURS"));
-    const card = html.match(
-      /<article class="opportunity-card"[^>]*>([\s\S]*?)<\/article>/,
-    )?.[1];
-    assert.ok(card);
-    assert.ok(!card.includes("Aa"));
-    assert.equal(card.split(messages["教师岗位"][locale]).length - 1, 1);
-    const label = card.match(
-      /<span class="role-label"[^>]*>[\s\S]*?<\/span>/,
-    )?.[0];
-    assert.ok(label?.includes(messages["教师岗位"][locale]));
-    assert.ok(!label.includes('aria-hidden="true"'));
-    assert.ok(card.includes(messages["在线英语教师"][locale]));
-    assert.ok(card.includes(messages["从这里开启申请"][locale]));
-    assert.ok(card.includes(messages["支持草稿保存"][locale]));
-    if (locale === "en") assert.ok(!/[\u3400-\u9fff]/u.test(html));
+    if (locale === "en")
+      assert.ok(!/[\u3400-\u9fff]/u.test(textOf(html).replaceAll("中文", "")));
   }
+  app.unmount();
+});
+
+test("home and header open the corresponding real form and restore trigger focus", async () => {
+  const { app, vm } = await mount();
+  // Render the production templates as VNodes to exercise their event bindings.
+  const clientTemplate = compileTemplate({
+    source: pageDescriptor.template.content,
+    filename: "index.vue",
+    id: "page-client",
+    compilerOptions: { bindingMetadata: pageScript.bindings },
+  });
+  const { render } = await moduleFrom(clientTemplate.code);
+  let tree;
+  const harness = renderer.createApp({
+    render() {
+      tree = render.call(vm, vm, [], {}, { ...vm, account: null }, {}, {});
+      return null;
+    },
+  });
+  harness.component("RecruitmentHome", home);
+  harness.mount({});
+  function find(node, predicate) {
+    if (predicate(node)) return node;
+    if (Array.isArray(node?.children)) {
+      for (const child of node.children) {
+        const match = find(child, predicate);
+        if (match) return match;
+      }
+    }
+  }
+  const component = find(tree, (n) => n?.type === home);
+  assert.ok(component);
+  let applyClick;
+  const homeHarness = renderer.createApp(
+    {
+      ...home,
+      setup(props, context) {
+        const renderHome = home.setup(props, context);
+        return () => {
+          const content = renderHome({ $emit: context.emit }, []);
+          applyClick = find(content, (n) => n?.type === "button").props.onClick;
+          return null;
+        };
+      },
+    },
+    { onApply: component.props.onApply },
+  );
+  homeHarness.mount({});
+  const login = find(
+    tree,
+    (n) => n?.type === "button" && n.props?.["aria-label"] === "Log in",
+  );
+  for (const [mode, click] of [
+    ["register", applyClick],
+    ["login", login.props.onClick],
+  ]) {
+    let restored = false;
+    click({
+      currentTarget: {
+        focus: () => {
+          restored = true;
+        },
+      },
+    });
+    await flush();
+    assert.equal(vm.authMode, mode);
+    assert.equal(vm.authOpen, true);
+    const html = await renderPage(vm, { account: null });
+    assert.match(html, /role="dialog"/);
+    assert.ok(
+      html.includes(
+        messages[mode === "register" ? "创建账号并继续 →" : "登录 →"][
+          vm.locale
+        ],
+      ),
+    );
+    vm.authOpen = false;
+    await flush();
+    assert.equal(restored, true);
+  }
+  homeHarness.unmount();
+  harness.unmount();
+  app.unmount();
 });
 test("actual applicant controller restores language, preserves unsaved fields and does not write on switching", async () => {
   const { app, vm, calls, item } = await mount();

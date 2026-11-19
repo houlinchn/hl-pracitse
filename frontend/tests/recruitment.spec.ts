@@ -19,7 +19,9 @@ test("页面闭环、持久化、员工审核、AI 对等与撤销", async ({
   const consoleErrors: string[] = [];
   page.on("pageerror", (error) => consoleErrors.push(error.name));
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /让热爱教学的你/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { level: 1, name: /在线英语.*教师/ }),
+  ).toBeVisible();
   await page.screenshot({
     path: testInfo.outputPath("landing.png"),
     fullPage: true,

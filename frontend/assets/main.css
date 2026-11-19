@@ -1220,13 +1220,6 @@ input[type="checkbox"] {
     gap: 8px;
   }
 }
-:lang(en) .hero h1 {
-  line-height: 1.2;
-  letter-spacing: -1px;
-}
-:lang(en) .hero .accent {
-  white-space: normal;
-}
 :lang(en) .progress-steps strong {
   overflow-wrap: anywhere;
 }
@@ -1249,52 +1242,99 @@ input[type="checkbox"] {
   align-self: flex-start;
   margin-top: 4px;
 }
+
 .public-site {
-  background: #fffcf7;
-  color: #252c2b;
+  --home-ink: #213d33;
+  --home-width: min(1240px, 89%);
+  background: #f7f4eb;
+  color: var(--home-ink);
   min-height: 100vh;
 }
+.home-skip {
+  position: absolute;
+  top: 0;
+  left: 5%;
+  transform: translateY(-150%);
+  padding: 10px 14px;
+  background: white;
+  z-index: 2;
+}
+.home-skip:focus {
+  transform: none;
+  top: 6px;
+}
+.public-wordmark {
+  font:
+    bold 35px/1 Georgia,
+    serif;
+  letter-spacing: -2.8px;
+  color: var(--home-ink);
+}
+.public-wordmark i {
+  color: #b5472e;
+}
 .public-site > .topbar {
-  background: #fffcf7;
-  padding-inline: max(24px, calc((100% - 1200px) / 2));
-  border-color: #e7e1d8;
-  gap: 20px;
+  background: transparent;
+  width: var(--home-width);
+  margin: auto;
+  height: auto;
+  min-height: 78px;
+  padding: 6px 0;
+  border-bottom: 1px solid #c7c9bc;
+  gap: 16px;
 }
 .public-nav {
   display: flex;
-  gap: 32px;
-  font-size: 13px;
+  gap: 26px;
+  font-size: 15px;
+}
+.public-nav a,
+.public-site .topbar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .public-nav a:hover {
-  color: #b63f20;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
-.public-site .topbar .button,
-.public-site .auth-modal .button {
-  background: #bd4325;
-  border-color: #bd4325;
-  color: white;
+.public-site .topbar-right {
+  width: auto;
+  gap: 12px;
+}
+.public-site .topbar .button {
+  min-height: 44px;
+  border: 1px solid var(--home-ink);
+  border-radius: 5px;
+  color: var(--home-ink);
+  background: transparent;
+  padding: 8px 14px;
+}
+.public-site .topbar .button:hover {
+  background: #e7ebdf;
+}
+.public-site .language-switch button {
+  min-height: 44px;
 }
 .public-site :is(a, button, summary):focus-visible {
-  outline-color: #bd4325;
-}
-.public-site .auth-modal {
-  color: #252c2b;
-}
-.public-site .auth-modal .eyebrow {
-  color: #9d402b;
+  outline: 3px solid #a3442a;
+  outline-offset: 3px;
 }
 @media (max-width: 760px) {
+  .public-site {
+    --home-width: 90%;
+  }
   .public-nav {
     display: none;
   }
   .public-site > .topbar {
-    padding-inline: 20px;
-    gap: 12px;
+    min-height: 64px;
+    gap: 6px;
   }
-  .voxnova-brand {
-    font-size: 20px;
+  .public-site .topbar-right {
+    gap: 8px;
   }
-  .voxnova-mark {
-    font-size: 36px;
+  .public-wordmark {
+    font-size: 30px;
   }
 }
